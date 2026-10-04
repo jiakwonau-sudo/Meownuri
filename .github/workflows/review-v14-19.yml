@@ -1,0 +1,28 @@
+name: MEOWNURI Muse v14.19 isolated review
+on:
+  push:
+    branches: ["review/meownuri-9-v14.19-20261005"]
+    paths: ["qa/**", ".github/workflows/review-v14-19.yml"]
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Install review dependencies
+        run: python -m pip install playwright==1.57.0
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Run unchanged game and collect evidence
+        run: python qa/review_v14_19.py
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: meownuri-v14.19-review
+          path: qa-results/
+          retention-days: 7
