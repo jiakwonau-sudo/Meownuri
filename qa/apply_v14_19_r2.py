@@ -1,7 +1,7 @@
 """Add a narrow furniture-safe home goal to the unchanged r1 candidate."""
 from pathlib import Path
 import json,hashlib,re,sys
-from apply_v14_19_r1 import build as build_r1
+from apply_v14_19_r1 import build as build_r1, EXPECTED
 WRAPPER='''
   // R03: placeable furniture may cover a scripted home-arrival coordinate.
   // Resolve only homeward companion destinations, without moving any actor
