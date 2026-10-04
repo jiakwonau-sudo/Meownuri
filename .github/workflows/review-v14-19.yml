@@ -1,8 +1,9 @@
 name: MEOWNURI Muse v14.19 isolated review
 on:
+  workflow_dispatch:
   push:
     branches: ["review/meownuri-9-v14.19-20261005"]
-    paths: ["qa/**", ".github/workflows/review-v14-19.yml"]
+    paths: ["qa/review_v14_19.py"]
 permissions:
   contents: read
 jobs:
