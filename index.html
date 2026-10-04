@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/><meta content="#805739" name="theme-color"/><title>MEOWNURI 9.0 · WIDE WORLD v11 · HOME & HUD</title><style>:root{--cream:#fff1d2;--ink:#432c20;--wood:#745039;--mint:#8bd4b8;--amber:#ffd572;--ui:1;color-scheme:light}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eab28b;font-family:Trebuchet MS,system-ui,sans-serif;color:var(--cream)}body{overscroll-behavior:none}button{font:inherit;touch-action:manipulation;cursor:pointer;border:2px solid #593e2d;border-radius:12px;background:#edcf96;color:var(--ink);min-height:44px;padding:8px 12px;font-weight:800;box-shadow:0 3px 0 #39281e33}button:active{transform:translateY(1px)}button:disabled{opacity:.48;cursor:default}button:focus-visible{outline:3px solid #d2fff0;outline-offset:2px}[hidden]{display:none!important}canvas#world{width:100%;height:100%;display:block;touch-action:none}.wood{background:linear-gradient(140deg,#855b3fee,#4f3629ef);border:2px solid #38271d;border-radius:13px;box-shadow:0 4px 0 #3d281a22}.parchment{background:linear-gradient(145deg,#fff4d9,#eed3a0);color:var(--ink);border:2px solid #765538;border-radius:14px;box-shadow:0 5px 0 #3c281e22}#hud{position:fixed;inset:0;pointer-events:none;font-size:calc(13px * var(--ui))}#topHud{position:absolute;top:max(10px,env(safe-area-inset-top));left:12px;right:12px;display:grid;grid-template-columns:220px 1fr 235px;grid-template-areas:'brand stage day' 'quest empty utility' 'quest empty resources';align-items:start;gap:8px;pointer-events:none}#brand{grid-area:brand;padding:10px 13px}#brand>strong{font-size:calc(19px * var(--ui))}#brand span{font-size:.6em}#brand small{display:block;margin-top:3px}#stage{grid-area:stage;justify-self:center;padding:8px 15px;text-align:center}#stage small{display:block;font-size:10px;letter-spacing:1px;opacity:.8}#stage strong{display:block;color:#ffe597;font-size:calc(13px * var(--ui))}#day{grid-area:day;justify-self:end;text-align:right;padding:9px 12px}#day>*{display:block}#day small{font-size:11px;opacity:.8;margin-top:3px}#quest{grid-area:quest;padding:10px 12px}#quest small{display:block;text-transform:uppercase;font-size:11px;opacity:.75;letter-spacing:.5px}#quest strong{display:block;margin:4px 0;font-size:calc(14px * var(--ui));line-height:1.4}#questDetail{display:block;font-size:calc(12px * var(--ui));line-height:1.4}#utility{grid-area:utility;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;pointer-events:auto}#utility button{width:44px;height:44px;padding:4px;font-size:14px}#resources{grid-area:resources;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:7px 10px;font-weight:800;font-size:calc(13px * var(--ui))}#resources span{white-space:nowrap}#quickbar{position:absolute;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));display:flex;gap:4px;padding:6px;background:#5d412fe8;border:2px solid #37271d;border-radius:14px;pointer-events:auto}.slot{position:relative;width:48px;height:46px;padding:0;min-height:44px;border-radius:8px;display:grid;place-items:center;font-size:22px}.slot small{position:absolute;bottom:0;right:3px;font-size:11px}.slot.selected{outline:3px solid var(--amber);transform:translateY(-3px)}.slot.pulse{animation:pop .5s 2}.slot:disabled{opacity:.55}#hint{position:absolute;left:50%;transform:translateX(-50%);bottom:78px;max-width:min(88vw,620px);padding:6px 12px;text-align:center;font-size:calc(12px * var(--ui));line-height:1.4}#action{position:absolute;left:50%;transform:translateX(-50%);bottom:124px;pointer-events:auto;max-width:85vw;min-width:185px;background:var(--mint);font-size:calc(14px * var(--ui));padding:12px 16px}#action:active{transform:translateX(-50%) translateY(1px)}#townButtons{position:absolute;right:14px;bottom:18px;display:flex;gap:8px;pointer-events:auto}#townButtons button{background:#f6d398}#joystick{display:none;position:absolute;width:116px;height:116px;border-radius:50%;border:3px solid #fff0c9b3;background:#67482a66;pointer-events:auto;touch-action:none;left:18px;bottom:114px}#knob{position:absolute;left:31px;top:31px;width:48px;height:48px;border:3px solid #593d2b;background:#ebcc92;border-radius:50%;pointer-events:none}#jump{display:none;position:absolute;right:18px;bottom:124px;width:68px;height:64px;background:linear-gradient(180deg,#d9a07b 0%,#bd7658 100%);border-color:#765344;color:#fff1df;box-shadow:0 3px 0 #51382f44;font-size:23px;pointer-events:auto;padding:0;opacity:.92}#jump small{display:block;font-size:12px}#reward{position:absolute;right:16px;top:43%;max-width:300px;display:flex;gap:12px;padding:12px;opacity:0;transform:translateY(10px);transition:.2s;z-index:16}#reward.show{opacity:1;transform:none}#rewardIcon{font-size:34px}#rewardType{display:block;font-size:11px}#rewardText{display:block;font-size:17px;margin:3px 0}#rewardDetail{font-size:12px}#banner{position:absolute;left:50%;top:29%;transform:translate(-50%,-50%) scale(.85);opacity:0;transition:.25s;z-index:17;text-align:center;padding:15px 20px;width:max-content;max-width:88vw;border-color:var(--amber)}#banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}#banner>*{display:block}#bannerTitle{font-size:clamp(23px,4vw,40px);margin:4px 0;color:#fff4d6}#bannerKicker{letter-spacing:1.5px;color:#ffe08b}#bannerSub{font-size:14px;color:#b4e4ce}#fx{position:absolute;inset:0;overflow:hidden;z-index:16}.confetti{position:absolute;left:50%;top:35%;font-size:21px;animation:confetti 1.5s ease-out forwards}@keyframes confetti{from{opacity:1;transform:scale(.4)}to{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}}@keyframes pop{50%{filter:brightness(1.35);scale:1.1}}.label{position:absolute;transform:translate(-50%,-100%);background:#69472def;border:1px solid #ffe39b;color:#fff4d5;border-radius:8px;padding:4px 7px;white-space:nowrap;font-size:11px;font-weight:800;pointer-events:none}.label.bad{background:#823e37}.label.goal{background:#ffd679;color:#54321d}.label.worker{background:#42584be8;border-color:#afdcbd}#saveStatus{position:absolute;bottom:14px;left:14px;font-size:10px;opacity:.65}.overlay{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:#30271b77;z-index:50}.panel{position:relative;width:min(94vw,560px);max-height:88dvh;overflow:auto;border:3px solid #5d3f2c;border-radius:22px;background:linear-gradient(135deg,#fff3d9,#efd5a8);color:var(--ink);padding:25px;box-shadow:0 22px 65px #20170e55}.panel h1{font-size:clamp(36px,8vw,55px);margin:6px 0}.panel h2{font-size:24px;margin:8px 34px 13px 0}.panel p{line-height:1.55;margin:10px 0}.panel small,.note{font-size:12px;line-height:1.5;opacity:.8}.startPanel{text-align:center}.startPanel button{display:block;width:100%;margin-top:12px}.primary{background:#8dd5b7}.close{position:absolute;right:9px;top:8px;min-width:44px;padding:0;font-size:25px}.menuGrid{display:grid;gap:10px}.buildCard,.catCard{border:1px solid #b99367;border-radius:13px;padding:13px;background:#fff8e7}.buildCard h3,.catCard h3{margin:0 0 5px}.buildCard button{width:100%;margin-top:10px}.cost{font-size:13px;color:#715237}.jobChoices{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}.jobChoices button{font-size:13px;padding:6px 9px}.jobChoices button.chosen{background:#9bdec2}.progress{height:9px;background:#b9997470;border-radius:10px;overflow:hidden;margin-top:8px}.progress>i{display:block;height:100%;background:#529980}.helpGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.helpGrid>div{padding:9px;border:1px solid #b9a078;border-radius:9px;font-size:13px}.panel ul{padding-left:22px;line-height:1.6}.rowButtons{display:flex;gap:8px;margin-top:15px}.rowButtons button{flex:1}
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/><meta content="#805739" name="theme-color"/><title>MEOWNURI 9.0 · WIDE WORLD v12 · HOME & HUD</title><style>:root{--cream:#fff1d2;--ink:#432c20;--wood:#745039;--mint:#8bd4b8;--amber:#ffd572;--ui:1;color-scheme:light}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eab28b;font-family:Trebuchet MS,system-ui,sans-serif;color:var(--cream)}body{overscroll-behavior:none}button{font:inherit;touch-action:manipulation;cursor:pointer;border:2px solid #593e2d;border-radius:12px;background:#edcf96;color:var(--ink);min-height:44px;padding:8px 12px;font-weight:800;box-shadow:0 3px 0 #39281e33}button:active{transform:translateY(1px)}button:disabled{opacity:.48;cursor:default}button:focus-visible{outline:3px solid #d2fff0;outline-offset:2px}[hidden]{display:none!important}canvas#world{width:100%;height:100%;display:block;touch-action:none}.wood{background:linear-gradient(140deg,#855b3fee,#4f3629ef);border:2px solid #38271d;border-radius:13px;box-shadow:0 4px 0 #3d281a22}.parchment{background:linear-gradient(145deg,#fff4d9,#eed3a0);color:var(--ink);border:2px solid #765538;border-radius:14px;box-shadow:0 5px 0 #3c281e22}#hud{position:fixed;inset:0;pointer-events:none;font-size:calc(13px * var(--ui))}#topHud{position:absolute;top:max(10px,env(safe-area-inset-top));left:12px;right:12px;display:grid;grid-template-columns:220px 1fr 235px;grid-template-areas:'brand stage day' 'quest empty utility' 'quest empty resources';align-items:start;gap:8px;pointer-events:none}#brand{grid-area:brand;padding:10px 13px}#brand>strong{font-size:calc(19px * var(--ui))}#brand span{font-size:.6em}#brand small{display:block;margin-top:3px}#stage{grid-area:stage;justify-self:center;padding:8px 15px;text-align:center}#stage small{display:block;font-size:10px;letter-spacing:1px;opacity:.8}#stage strong{display:block;color:#ffe597;font-size:calc(13px * var(--ui))}#day{grid-area:day;justify-self:end;text-align:right;padding:9px 12px}#day>*{display:block}#day small{font-size:11px;opacity:.8;margin-top:3px}#quest{grid-area:quest;padding:10px 12px}#quest small{display:block;text-transform:uppercase;font-size:11px;opacity:.75;letter-spacing:.5px}#quest strong{display:block;margin:4px 0;font-size:calc(14px * var(--ui));line-height:1.4}#questDetail{display:block;font-size:calc(12px * var(--ui));line-height:1.4}#utility{grid-area:utility;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;pointer-events:auto}#utility button{width:44px;height:44px;padding:4px;font-size:14px}#resources{grid-area:resources;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:7px 10px;font-weight:800;font-size:calc(13px * var(--ui))}#resources span{white-space:nowrap}#quickbar{position:absolute;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));display:flex;gap:4px;padding:6px;background:#5d412fe8;border:2px solid #37271d;border-radius:14px;pointer-events:auto}.slot{position:relative;width:48px;height:46px;padding:0;min-height:44px;border-radius:8px;display:grid;place-items:center;font-size:22px}.slot small{position:absolute;bottom:0;right:3px;font-size:11px}.slot.selected{outline:3px solid var(--amber);transform:translateY(-3px)}.slot.pulse{animation:pop .5s 2}.slot:disabled{opacity:.55}#hint{position:absolute;left:50%;transform:translateX(-50%);bottom:78px;max-width:min(88vw,620px);padding:6px 12px;text-align:center;font-size:calc(12px * var(--ui));line-height:1.4}#action{position:absolute;left:50%;transform:translateX(-50%);bottom:124px;pointer-events:auto;max-width:85vw;min-width:185px;background:var(--mint);font-size:calc(14px * var(--ui));padding:12px 16px}#action:active{transform:translateX(-50%) translateY(1px)}#townButtons{position:absolute;right:14px;bottom:18px;display:flex;gap:8px;pointer-events:auto}#townButtons button{background:#f6d398}#joystick{display:none;position:absolute;width:116px;height:116px;border-radius:50%;border:3px solid #fff0c9b3;background:#67482a66;pointer-events:auto;touch-action:none;left:18px;bottom:114px}#knob{position:absolute;left:31px;top:31px;width:48px;height:48px;border:3px solid #593d2b;background:#ebcc92;border-radius:50%;pointer-events:none}#jump{display:none;position:absolute;right:18px;bottom:124px;width:68px;height:64px;background:linear-gradient(180deg,#d9a07b 0%,#bd7658 100%);border-color:#765344;color:#fff1df;box-shadow:0 3px 0 #51382f44;font-size:23px;pointer-events:auto;padding:0;opacity:.92}#jump small{display:block;font-size:12px}#reward{position:absolute;right:16px;top:43%;max-width:300px;display:flex;gap:12px;padding:12px;opacity:0;transform:translateY(10px);transition:.2s;z-index:16}#reward.show{opacity:1;transform:none}#rewardIcon{font-size:34px}#rewardType{display:block;font-size:11px}#rewardText{display:block;font-size:17px;margin:3px 0}#rewardDetail{font-size:12px}#banner{position:absolute;left:50%;top:29%;transform:translate(-50%,-50%) scale(.85);opacity:0;transition:.25s;z-index:17;text-align:center;padding:15px 20px;width:max-content;max-width:88vw;border-color:var(--amber)}#banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}#banner>*{display:block}#bannerTitle{font-size:clamp(23px,4vw,40px);margin:4px 0;color:#fff4d6}#bannerKicker{letter-spacing:1.5px;color:#ffe08b}#bannerSub{font-size:14px;color:#b4e4ce}#fx{position:absolute;inset:0;overflow:hidden;z-index:16}.confetti{position:absolute;left:50%;top:35%;font-size:21px;animation:confetti 1.5s ease-out forwards}@keyframes confetti{from{opacity:1;transform:scale(.4)}to{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}}@keyframes pop{50%{filter:brightness(1.35);scale:1.1}}.label{position:absolute;transform:translate(-50%,-100%);background:#69472def;border:1px solid #ffe39b;color:#fff4d5;border-radius:8px;padding:4px 7px;white-space:nowrap;font-size:11px;font-weight:800;pointer-events:none}.label.bad{background:#823e37}.label.goal{background:#ffd679;color:#54321d}.label.worker{background:#42584be8;border-color:#afdcbd}#saveStatus{position:absolute;bottom:14px;left:14px;font-size:10px;opacity:.65}.overlay{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:#30271b77;z-index:50}.panel{position:relative;width:min(94vw,560px);max-height:88dvh;overflow:auto;border:3px solid #5d3f2c;border-radius:22px;background:linear-gradient(135deg,#fff3d9,#efd5a8);color:var(--ink);padding:25px;box-shadow:0 22px 65px #20170e55}.panel h1{font-size:clamp(36px,8vw,55px);margin:6px 0}.panel h2{font-size:24px;margin:8px 34px 13px 0}.panel p{line-height:1.55;margin:10px 0}.panel small,.note{font-size:12px;line-height:1.5;opacity:.8}.startPanel{text-align:center}.startPanel button{display:block;width:100%;margin-top:12px}.primary{background:#8dd5b7}.close{position:absolute;right:9px;top:8px;min-width:44px;padding:0;font-size:25px}.menuGrid{display:grid;gap:10px}.buildCard,.catCard{border:1px solid #b99367;border-radius:13px;padding:13px;background:#fff8e7}.buildCard h3,.catCard h3{margin:0 0 5px}.buildCard button{width:100%;margin-top:10px}.cost{font-size:13px;color:#715237}.jobChoices{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}.jobChoices button{font-size:13px;padding:6px 9px}.jobChoices button.chosen{background:#9bdec2}.progress{height:9px;background:#b9997470;border-radius:10px;overflow:hidden;margin-top:8px}.progress>i{display:block;height:100%;background:#529980}.helpGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.helpGrid>div{padding:9px;border:1px solid #b9a078;border-radius:9px;font-size:13px}.panel ul{padding-left:22px;line-height:1.6}.rowButtons{display:flex;gap:8px;margin-top:15px}.rowButtons button{flex:1}
 @media(pointer:coarse),(max-width:760px){
  #topHud{top:max(6px,env(safe-area-inset-top));left:8px;right:8px;grid-template-columns:1.15fr 1fr;grid-template-areas:'stage stage' 'brand day' 'quest quest' 'resources utility';gap:5px}#stage{justify-self:stretch;text-align:center;padding:5px 8px}#stage small{display:none}#stage strong{font-size:calc(12px * var(--ui))}#brand{padding:6px 8px}#brand>strong{font-size:calc(14px * var(--ui))}#brand small{font-size:calc(10px * var(--ui));margin-top:2px}#day{justify-self:stretch;padding:6px 8px}#day strong{font-size:calc(12px * var(--ui))}#day small{font-size:10px}#quest{padding:6px 9px}#quest small{display:none}#quest strong{font-size:calc(12px * var(--ui));margin:0 0 2px}#questDetail{font-size:calc(10px * var(--ui))}#utility{gap:2px;justify-content:end}#utility button{width:35px;min-height:36px;height:36px;font-size:11px;padding:0;border-radius:9px}#resources{font-size:calc(11px * var(--ui));padding:6px;gap:4px;justify-content:start}#joystick,#jump{display:block}#quickbar{bottom:max(7px,env(safe-area-inset-bottom));gap:2px;padding:4px;max-width:96vw}.slot{width:38px;height:42px;font-size:19px;min-height:42px}#hint{bottom:63px;max-width:91vw;font-size:calc(11px * var(--ui));padding:4px 8px}#action{bottom:205px!important;padding:9px 10px;min-height:45px;font-size:calc(12px * var(--ui));max-width:77vw}#townButtons{bottom:113px;right:94px;display:grid;gap:5px}#townButtons button{font-size:12px;padding:6px 9px;min-height:40px}#reward{top:40%;right:8px;max-width:225px;padding:9px}#rewardText{font-size:14px}#banner{top:35%;padding:12px;max-width:91vw}#bannerSub{font-size:12px}#saveStatus{bottom:95px;left:18px}.panel{padding:20px 16px}.panel h2{font-size:22px}.label{font-size:10px}
 }
@@ -377,6 +377,7 @@ function subtitleText() {
 }
 var lastSub = '';
 function currentMood() {
+  if (window.__meowMoodOverride && TRACKS[window.__meowMoodOverride]) return window.__meowMoodOverride;
   var g = window.game;
   if (!g) return 'title';
   if (document.body.classList.contains('choice-lock')) return 'choice';
@@ -492,6 +493,193 @@ function boot() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
 
+})();
+
+</script>
+<script>
+/* ============================================================
+   MEOWNURI v12 — Player Agency Engine
+   Appended non-invasively. Wraps window.game methods.
+   - Day1 -> Day2: real choice (go / stay & explore more)
+   - Story scenes (bond/home/sunset): intent choice before cinematic
+   - Uses the game's own modal + choiceGrid styling
+   ============================================================ */
+(function () {
+'use strict';
+if (window.__meowAgency) return;
+window.__meowAgency = true;
+
+function $(s) { return document.querySelector(s); }
+function setMood(m) { window.__meowMoodOverride = m || null; }
+
+/* wait for the game */
+var iv = setInterval(function () {
+  var g = window.game;
+  if (!g || typeof g.openModal !== 'function' || typeof g.startDay2 !== 'function') return;
+  clearInterval(iv);
+  install(g);
+}, 300);
+
+function install(g) {
+
+  /* ---------- 0. BUGFIX: quest text not restored on continue ---------- */
+  var origSetQuest = g.setQuest.bind(g);
+  g.setQuest = function (text, detail) {
+    this.__questText = text;
+    this.__questDetail = detail || '';
+    return origSetQuest(text, detail);
+  };
+  // initialize from current DOM (constructor already ran)
+  try {
+    var qt = $('#questText'), qd = $('#questDetail');
+    if (qt) g.__questText = qt.textContent;
+    if (qd) g.__questDetail = qd.textContent;
+  } catch (e) {}
+  var origSnapshot = g.snapshot.bind(g);
+  g.snapshot = function () {
+    var s = origSnapshot();
+    s.quest = { text: this.__questText || '', detail: this.__questDetail || '' };
+    return s;
+  };
+  var SAVE_KEY_FIX = 'meownuri:MEOWNURI9:story:v3-wide';
+  var origRestore = g.restore.bind(g);
+  g.restore = function () {
+    var savedQuest = null;
+    try {
+      var s = JSON.parse(localStorage.getItem(SAVE_KEY_FIX) || 'null');
+      if (s && s.quest && s.quest.text) savedQuest = s.quest;
+    } catch (e) {}
+    var r = origRestore();
+    if (savedQuest) {
+      try { origSetQuest(savedQuest.text, savedQuest.detail || ''); } catch (e) {}
+    }
+    // intro paper trail should stay hidden once intro is done
+    try { if (this.stage >= 7 && this.clearIntroTrail) this.clearIntroTrail(); } catch (e) {}
+    return r;
+  };
+
+  /* ---------- 1. Day1 -> Day2: a real decision ---------- */
+  g.finishDay1 = function () {
+    var self = this;
+    this.cut = null;
+    this.cinemaOn(false);
+    this.storyLock = true;
+    this.__day1Complete = true;
+    setMood('tender');
+    this.openModal(
+      '<small>MEOWNURI 9.0 · DAY 1</small><h2>🌙 DAY 1 COMPLETE</h2>' +
+      '<p class="cinematicQuote">박스 하나가 집이 됐고, 낯선 고양이 하나가 친구가 됐습니다.</p>' +
+      '<p>까미가 옆에서 잠들었다. 고요한 밤이다.<br>내일 아침을 어떻게 맞을까 — <b>당신이 정하세요.</b></p>' +
+      '<div class="choiceGrid">' +
+      '<button id="agGo" class="choiceHope">① 아침을 맞는다<small>DAY 2로 넘어갑니다. 새로운 이야기가 시작됩니다.</small></button>' +
+      '<button id="agStay">② 조금 더 머문다<small>이 밤의 평화를 더 즐깁니다. 준비되면 언제든 넘어갈 수 있어요.</small></button>' +
+      '</div>', true);
+    $('#agGo').onclick = function () { setMood(null); self.startDay2(); };
+    $('#agStay').onclick = function () {
+      setMood(null);
+      self.closeModal(true);
+      self.storyLock = false;
+      self.setQuest && self.setQuest('밤의 평화', '준비가 되면 🌅 버튼으로 DAY 2를 맞으세요.');
+      showDay2Button();
+    };
+  };
+
+  /* floating re-entry button for the "stay" path */
+  function showDay2Button() {
+    if ($('#agDay2Btn')) return;
+    var b = document.createElement('button');
+    b.id = 'agDay2Btn';
+    b.textContent = '🌅 DAY 2 · 아침을 맞는다';
+    b.setAttribute('aria-label', 'DAY 2로 넘어가기');
+    b.style.cssText = 'position:fixed;right:14px;bottom:118px;z-index:40;padding:13px 17px;font-weight:800;font-size:14px;background:linear-gradient(180deg,#ffe6ad,#f2c66d);border:2px solid #593e2d;border-radius:14px;box-shadow:0 5px 14px #0007;';
+    b.onclick = function () { b.remove(); setMood(null); g.finishDay1(); };
+    document.body.appendChild(b);
+  }
+  setInterval(function () {
+    var b = $('#agDay2Btn');
+    if (b && g.dayNumber >= 2) b.remove();
+    if (b && (document.body.classList.contains('cinematic') || document.body.classList.contains('choice-lock'))) b.style.display = 'none';
+    else if (b) b.style.display = '';
+  }, 800);
+
+  /* ---------- 2. Story scenes: choose your intent ---------- */
+  var SCENES = {
+    bond: {
+      title: '🐟 까미의 선물',
+      text: '까미가 물고기를 물고 와서, 삼색이 앞에 조용히 내려놓았다.',
+      opts: [
+        ['① "고맙다, 까미" — 받아든다', 'choiceHope'],
+        ['② "먼저 먹어" — 까미에게 권한다', '']
+      ],
+      after: [
+        '삼색이는 물고기를 받아들었다. 까미의 꼬리가 살짝 흔들렸다.',
+        '삼색이는 물고기를 까미 쪽으로 밀어주었다. 까미가 한 입 베어 물었다.'
+      ]
+    },
+    home: {
+      title: '📦 우리의 집',
+      text: '표지판을 달 시간이다. 까미가 작은 망치를 물고 왔다.',
+      opts: [
+        ['① 함께 못질한다', 'choiceHope'],
+        ['② 까미에게 맡기고 응원한다', '']
+      ],
+      after: [
+        '둘이 함께 표지판을 달았다. 삐뚤빼뚤해서 더 정겹다.',
+        '까미가 망치질하는 동안, 삼색이는 옆에서 박자를 맞췄다.'
+      ]
+    },
+    sunset: {
+      title: '🌅 절벽의 끝',
+      text: '해가 기울고 있다. 까미가 절벽 끝을 바라본다.',
+      opts: [
+        ['① 나란히 앉는다', 'choiceHope'],
+        ['② 까미 어깨에 기댄다', '']
+      ],
+      after: [
+        '나란히 앉아 해를 바라보았다. 말이 필요 없었다.',
+        '까미의 어깨에 기대앉았다. 까미가 살짝 떨다가 가만있었다.'
+      ]
+    }
+  };
+
+  var origScene = g.startStoryScene.bind(g);
+  g.startStoryScene = function (scene) {
+    var cfg = SCENES[scene];
+    if (!cfg || this.__agOpen) return origScene(scene);
+    var self = this;
+    this.__agOpen = true;
+    setMood('tender');
+    var html = '<small>MEOWNURI 9.0 · STORY</small><h2>' + cfg.title + '</h2>' +
+      '<p class="cinematicQuote">' + cfg.text + '</p>' +
+      '<div class="choiceGrid">' +
+      cfg.opts.map(function (o, i) {
+        return '<button data-ag="' + i + '" class="' + o[1] + '">' + o[0] + '</button>';
+      }).join('') +
+      '</div><p class="note">당신의 선택으로 이야기가 이어집니다.</p>';
+    this.openModal(html, true);
+    Array.prototype.forEach.call(document.querySelectorAll('#modal [data-ag]'), function (btn) {
+      btn.onclick = function () {
+        var i = parseInt(btn.getAttribute('data-ag'), 10) || 0;
+        setMood(null);
+        self.closeModal(true);
+        flashLine(cfg.after[i], function () {
+          self.__agOpen = false;
+          origScene(scene);
+        });
+      };
+    });
+  };
+
+  /* brief narrative beat between choice and scene */
+  function flashLine(text, done) {
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(11,8,8,.85);transition:opacity .3s;';
+    d.innerHTML = '<div style="max-width:82vw;text-align:center;color:#fff3d7;font-size:clamp(17px,3vw,24px);font-weight:800;line-height:1.65;text-shadow:0 3px 14px #000;">' + text + '</div>';
+    document.body.appendChild(d);
+    setTimeout(function () { d.style.opacity = '0'; }, 1700);
+    setTimeout(function () { d.remove(); if (done) done(); }, 2100);
+  }
+}
 })();
 
 </script></body><!-- Three.js r170 third-party license
