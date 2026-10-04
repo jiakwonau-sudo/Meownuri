@@ -1,5 +1,5 @@
-"""Retry only unfinished continuous input QA; game candidate is unchanged.
-Driver fixes: reachable targets and transition-aware physical pointer clicks.
+"""Retry unfinished continuous input QA; candidate game remains unchanged.
+Driver fixes: reachable targets, physical modal clicks and companion clearance.
 No progression injection, teleporting, accelerated clock or forced hidden click.
 """
 from pathlib import Path
@@ -16,11 +16,10 @@ prefix=prefix.replace("R['milestones'].append({'elapsed':round(time.time()-t0,1)
 old="if p.locator(sel).is_visible():p.locator(sel).click();handled=True;break"
 assert prefix.count(old)==1
 prefix=prefix.replace(old,"if p.locator(sel).is_visible():activate_modal(p,sel,s);handled=True;break")
-# A modal may close between its state read and selector inspection.
 prefix=prefix.replace("if not handled:raise AssertionError('Unhandled modal '+s['modalText'][:300])", "if not handled and state(p)['modal']:raise AssertionError('Unhandled modal '+state(p)['modalText'][:300])")
 exec(compile(prefix,'qa/continue_v14_19.py','exec'),globals())
-R['prior_runs']=['37238039338: original defects reproduced; r1 targeted fixes, ending animations and mobile checks passed','37238504715: fresh Day1, both real UI reloads, Day2 reached; driver timed out on a modal already closed by transition']
-R['driver_revision']='3: transition-aware pointer input; candidate unchanged'
+R['prior_runs']=['37238039338: original defects reproduced; r1 targeted fixes, ending animations and mobile checks passed','37238504715: fresh Day1, both UI reloads, Day2 reached; modal transition race','37239264528: player remained 1.5m in front of companion after sunset restore; navigation clearance added to driver, not game']
+R['driver_revision']='4: visible pointer input and keyboard-only companion clearance; candidate unchanged'
 R['driver_events']=[]
 def activate_modal(p,sel,before):
  box=p.locator(sel).bounding_box()
@@ -39,6 +38,26 @@ def activate_modal(p,sel,before):
  p.mouse.click(x,y);p.wait_for_timeout(200)
  after=state(p)
  R['driver_events'].append({'selector':sel,'input':'physical pointer at visible hit-tested button','before_day':before['day'],'after_day':after['day'],'modal_after':after['modal'],'cut_after':after['cut']});persist()
+
+def approach_friend(p,stop):
+ # Do not park the player across the companion's collision/pathfinding start.
+ # This is test input policy, not an actor-position or collision modification.
+ s=state(p);f=s['friend'];a=s['player'];dx=a['x']-f['x'];dz=a['z']-f['z'];d=math.hypot(dx,dz)
+ escape=getattr(p,'_qa_follow_escape',None)
+ if stop>=5:
+  if escape and d<4.3:
+   if move_step(p,escape,.55):p._qa_follow_escape=None
+   return
+  if escape:p._qa_follow_escape=None
+  if d<3.2:
+   ux=dx/(d or 1);uz=dz/(d or 1)
+   if d<.01:ux,uz=0,1
+   escape={'x':f['x']+ux*4-uz*3,'z':f['z']+uz*4+ux*3}
+   p._qa_follow_escape=escape
+   R['driver_events'].append({'input':'keyboard sidestep to leave companion path clear','distance':d,'phase':s['phase'],'goal':escape});persist()
+   move_step(p,escape,.55);return
+ else:p._qa_follow_escape=None
+ return move_step(p,{'x':f['x'],'z':f['z']},stop)
 try:
  time.sleep(1)
  with sync_playwright() as pw:
