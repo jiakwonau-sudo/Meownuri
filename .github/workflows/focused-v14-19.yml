@@ -2,13 +2,13 @@ name: MEOWNURI v14.19 focused evidence
 on:
   push:
     branches: ["review/meownuri-9-v14.19-20261005"]
-    paths: ["qa_focused_v14_19.py", "qa/apply_v14_19_r1.py", "qa/continue_v14_19.py", ".github/workflows/focused-v14-19.yml"]
+    paths: ["qa_focused_v14_19.py", "qa/apply_v14_19_r1.py", "qa/continue_v14_19.py", "qa/retry_continuous_v14_19.py", ".github/workflows/focused-v14-19.yml"]
 permissions:
   contents: read
 jobs:
   focused:
     runs-on: ubuntu-latest
-    timeout-minutes: 22
+    timeout-minutes: 17
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -16,8 +16,8 @@ jobs:
           python-version: "3.13"
       - run: python -m pip install playwright==1.57.0
       - run: python -m playwright install --with-deps chromium
-      - name: Original defects, isolated r1 candidate, continuous gameplay
-        run: timeout 1140s python -u qa/continue_v14_19.py
+      - name: Remaining continuous keyboard-input gameplay
+        run: timeout 840s python -u qa/retry_continuous_v14_19.py
       - uses: actions/upload-artifact@v5
         if: always()
         with:
