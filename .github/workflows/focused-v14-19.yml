@@ -1,0 +1,26 @@
+name: MEOWNURI v14.19 focused evidence
+on:
+  push:
+    branches: ["review/meownuri-9-v14.19-20261005"]
+    paths: ["qa_focused_v14_19.py", ".github/workflows/focused-v14-19.yml"]
+permissions:
+  contents: read
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python -m pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Original game, on-demand render review
+        run: timeout 540s python qa_focused_v14_19.py
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: meownuri-v14.19-focused
+          path: qa-focused/
+          retention-days: 7
