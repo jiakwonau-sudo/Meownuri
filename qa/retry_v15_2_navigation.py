@@ -1,21 +1,19 @@
-"""Use an outer-house approach for a UI interaction obstructed by furniture.
-Only the test player's ordinary key route changes. Game bytes stay identical.
-A natural-save preflight is separate from the subsequent empty-browser run.
+"""Outer-house keyboard approach. Game bytes remain unchanged.
+Natural-save UI preflight and fresh-empty full play use separate contexts.
 """
 from pathlib import Path
 import sys
 assert sys.argv[1:]==['fresh']
 bootstrap=Path('qa/retry_v15_2_fresh.py').read_text().split('try:\n    time.sleep(1)',1)[0]
 exec(compile(bootstrap,'qa/retry_v15_2_fresh.py','exec'),globals())
-R['retry_of']='37249942335 and 37250826122: driver approached the occupied side of home; journey restoration and companion arrival had succeeded'
-R['driver_revision']='Physical outer-house detour with staged waypoints; no changes to actors, furniture, clocks or quest state'
+R['retry_of']='Earlier fresh/preflight interruptions: capture, implicit click wait, tangent navigation; 37251133721 reached home action but expected cinematic before its required choice screen'
+R['driver_revision']='Staged outer-house keyboard route; assert visible home choice before cinematic; no game-state mutation'
 previous_move_step=move_step
 route_pages={}
 def move_step(p,goal,stop=2.1):
     s=state(p)
     home=s['stage']==7 and ((s['phase']==1 and s['homeReady']) or (s['phase']==5 and s['clueReady']))
-    if not home or s['cut'] or s['ending']:
-        return previous_move_step(p,goal,stop)
+    if not home or s['cut'] or s['ending']:return previous_move_step(p,goal,stop)
     routes=route_pages.setdefault(p,{})
     if s['phase'] not in routes:
         box=target(p,'g.box')
@@ -38,9 +36,10 @@ def navigation_preflight(b):
             s=state(p)
             if s['action'] and '표지판' in s['action']['text']:
                 p.keyboard.press('e')
-                p.wait_for_function("game.cut && game.cut.scene==='home'",timeout=10000)
-                result={'pass':True,'source':'unmodified natural snapshot from failed driver run 37249942335','seconds':round(time.time()-t,1),'actual_action':s['action'],'distance_to_box':p.evaluate('game.dist(game.box)'),'state':state(p)}
-                assert not result['state']['errors'];return result
+                p.locator('[data-ag="0"]').wait_for(state='visible',timeout=10000)
+                after=state(p)
+                assert after['modal'] and '우리의 집' in after['modalText'] and not after['errors'],after
+                return {'pass':True,'source':'unmodified natural snapshot from run 37249942335','seconds':round(time.time()-t,1),'actual_action':s['action'],'distance_to_box':p.evaluate('game.dist(game.box)'),'state':after,'meaning':'Real E interaction opened the home choice UI; cinematic requires another player choice'}
             move_step(p,{'x':13,'z':11},.7)
         raise AssertionError('No reachable home action within 45 seconds: '+json.dumps(state(p),ensure_ascii=False))
     finally:c.close()
@@ -50,7 +49,7 @@ try:
         b=pw.chromium.launch(headless=True,args=['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage'])
         R['navigation_preflight']=navigation_preflight(b);persist()
         print('NAVIGATION_PREFLIGHT '+json.dumps(R['navigation_preflight'],ensure_ascii=False),flush=True)
-        case('v15.2-r1 fresh start through Day2 loss ending','separate empty browser; original clocks; real pointer and keyboard; two verified UI save/reloads; geometry-assisted key navigation; no checkpoints, teleports or phase changes',lambda:continuous(b))
+        case('v15.2-r1 fresh start through Day2 loss ending','separate empty browser; original clocks; real pointer and keyboard; two verified UI save/reloads; geometry-assisted navigation; no checkpoints, teleports or phase changes',lambda:continuous(b))
         b.close()
 except Exception as e:R['fatal']=str(e);R['trace']=traceback.format_exc()
 finally:
