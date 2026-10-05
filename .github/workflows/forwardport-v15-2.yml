@@ -18,9 +18,9 @@ jobs:
         run: |
           pip install playwright==1.63.0
           python -m playwright install --with-deps chromium
-      - name: Complete remaining fresh route with explicit pointer handling
-        run: python -u qa/retry_v15_2_fresh.py fresh
-      - name: Verify accumulated evidence and commit exact tested candidate only
+      - name: Verify reachable UI action then complete separate fresh game
+        run: python -u qa/retry_v15_2_navigation.py fresh
+      - name: Verify evidence and commit exact tested candidate only
         env:
           REVIEW_BRANCH: review/meownuri-9-v15.2-20261005
         run: |
@@ -35,6 +35,7 @@ jobs:
           assert len(prior['passed_cases'])==4 and all(c['status']=='PASS' for c in prior['passed_cases'])
           assert natural['passed_case']['status']=='PASS'
           assert not fresh.get('fatal') and len(fresh['cases'])==1 and fresh['cases'][0]['status']=='PASS'
+          assert fresh['navigation_preflight']['pass']
           detail=fresh['cases'][0]['detail']
           assert detail['completed'] and set(detail['ui_save_reload_stages'])=={'home','sunset'}
           assert detail['ending']['ending'] and not detail['ending']['friend']['active'] and not detail['ending']['errors']
@@ -44,10 +45,10 @@ jobs:
           combined.append(dict(natural['passed_case'],run_id=natural['run_id']))
           combined.append(dict(fresh['cases'][0],run_id=int(os.environ['GITHUB_RUN_ID'])))
           assert len(combined)==6 and len({c['name'] for c in combined})==6
-          m=fresh['manifest'];m.update(candidate_sha256=expected,status='DEFINED FUNCTIONAL ROUTES PASS ACROSS THREE RUNS; NOT FULL RELEASE QA',checks=combined,
+          m=fresh['manifest'];m.update(candidate_sha256=expected,status='DEFINED FUNCTIONAL ROUTES PASS; NOT FULL RELEASE QA',checks=combined,
+            navigation_preflight=fresh['navigation_preflight'],
             capture_warnings=natural['capture_warnings']+fresh.get('capture_warnings',[]),
-            historical_failed_runs=[prior['run_id'],natural['run_id']],
-            source_test_commit=os.environ['GITHUB_SHA'],
+            historical_failed_runs=[prior['run_id'],natural['run_id'],37249942335],source_test_commit=os.environ['GITHUB_SHA'],
             public_deployment='NOT DEPLOYED; main unchanged',
             limitations=['Original renderer on demand, not continuous FPS testing','Physical Android, audio listening and all choice combinations unverified','Capture warnings are not visual QA passes','Historical candidate_r2 directory contains exact v15.2-r1; identify by hash'])
           pathlib.Path('qa/v15_2_forwardport_manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2))
@@ -69,4 +70,5 @@ jobs:
             qa/v15_2_forwardport_manifest.json
             qa/v15_2_initial_evidence.json
             qa/v15_2_natural_evidence.json
+            qa/natural_home_ready_37249942335.json
             index.html
