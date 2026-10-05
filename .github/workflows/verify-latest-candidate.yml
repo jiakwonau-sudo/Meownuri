@@ -1,14 +1,14 @@
-name: Verify latest Muse v15.3 candidate
+name: Resume Muse v15.3 candidate verification
 on:
   push:
     branches: ['review/meownuri-9-v15.2-20261005']
-    paths: ['qa/**', '.github/workflows/verify-latest-candidate.yml']
+    paths: ['qa/continuation_driver_v15_3.py']
 permissions:
-  contents: write
+  contents: read
 jobs:
-  targeted:
+  continuation:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,60 +17,41 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Build from pinned new main and preserve all Day3 code
+      - name: Verify archived candidate and extract analysis sources
         run: |
-          python qa/apply_v15_3_r1.py index.html qa-build
-          node qa/unit_save_patch.cjs qa-build/agency.js > qa-build/unit_save_results.json
-          node qa/unit_home_goal_r2.mjs qa-build/index.html > qa-build/unit_home_results.json
           python - <<'PY'
-          import re,json,base64,pathlib,subprocess
-          d=pathlib.Path('qa-build/syntax');d.mkdir()
-          for i,(a,t) in enumerate(re.findall(r'<script([^>]*)>(.*?)</script>',pathlib.Path('qa-build/index.html').read_text(),re.S)):
-              if 'importmap' in a:
-                  for n,u in json.loads(t)['imports'].items():(d/(n+'.mjs')).write_bytes(base64.b64decode(u.split(',',1)[1]))
-              else:(d/('inline'+str(i)+'.mjs')).write_text(t)
-          results=[]
-          for p in d.glob('*.mjs'):
-              r=subprocess.run(['node','--check',str(p)],capture_output=True,text=True)
-              results.append({'file':p.name,'pass':r.returncode==0,'error':r.stderr})
-          pathlib.Path('qa-build/syntax_results.json').write_text(json.dumps(results,indent=2))
-          assert len(results)==9 and all(r['pass'] for r in results)
+          import pathlib,re,json,hashlib,base64,subprocess
+          raw=pathlib.Path('index.html').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=='954d6d00e930e2e95b3595caa69e1515de0d71962dbeccb2d78549214d18011c','Wrong candidate: refusing stale input'
+          out=pathlib.Path('qa-resume');out.mkdir()
+          scripts=re.findall(r'<script([^>]*)>(.*?)</script>',raw.decode(),re.S)
+          (out/'agency.js').write_text(scripts[-1][1])
+          syntax=out/'syntax';syntax.mkdir()
+          for i,(attrs,body) in enumerate(scripts):
+            if 'importmap' in attrs:
+              for name,uri in json.loads(body)['imports'].items():(syntax/(name+'.mjs')).write_bytes(base64.b64decode(uri.split(',',1)[1]))
+            else:(syntax/('inline'+str(i)+'.mjs')).write_text(body)
+          checks=[]
+          for path in syntax.glob('*.mjs'):
+            r=subprocess.run(['node','--check',str(path)],capture_output=True,text=True)
+            checks.append({'file':path.name,'pass':r.returncode==0,'error':r.stderr})
+          (out/'syntax.json').write_text(json.dumps(checks,indent=2))
+          assert len(checks)==9 and all(c['pass'] for c in checks)
           PY
-      - name: Install browser
+          node qa/unit_save_patch.cjs qa-resume/agency.js > qa-resume/unit-save.json
+          node qa/unit_home_goal_r2.mjs index.html > qa-resume/unit-home.json
+      - name: Install existing test browser
         run: |
           pip install playwright==1.63.0
           python -m playwright install --with-deps chromium
-      - name: Verify latest targeted cases
-        run: python -u qa/check_v15_3_targeted.py
-      - name: Commit only tested candidate to review branch
-        env:
-          REVIEW_BRANCH: review/meownuri-9-v15.2-20261005
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import pathlib,json,hashlib,os
-          q=pathlib.Path('qa-continuation');r=json.loads((q/'results.json').read_text())
-          assert not r.get('fatal') and len(r['cases'])==3 and all(c['status']=='PASS' for c in r['cases'])
-          assert not r['cases'][0]['detail']['errors'] and not r['cases'][1]['detail']['ending']['errors']
-          raw=(q/'candidate_r2/index.html').read_bytes()
-          assert hashlib.sha256(raw).hexdigest()=='954d6d00e930e2e95b3595caa69e1515de0d71962dbeccb2d78549214d18011c'
-          m=r['manifest'];m.update(status='TARGETED CHECKS PASS; FULL RELEASE QA PARTIAL',checks=r['cases'],capture_warnings=r['capture_warnings'],source_test_commit=os.environ['GITHUB_SHA'],source_run_id=int(os.environ['GITHUB_RUN_ID']),fresh_run_completed=False,day3_playthrough_verified=False,limitations=['Fresh full play on v15.2 remained incomplete, including continue-button visibility failure; no fresh v15.3 full play claimed','New Day3 content preserved byte-for-byte, not play-through verified','Original renderer on demand; physical Android, listening quality and FPS unverified'],public_deployment='NOT DEPLOYED; public main protected')
-          pathlib.Path('qa/v15_3_forwardport_manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2))
-          pathlib.Path('index.html').write_bytes(raw)
-          PY
-          test "$(git ls-remote origin refs/heads/$REVIEW_BRANCH | cut -f1)" = "$GITHUB_SHA"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html qa/v15_3_forwardport_manifest.json
-          git commit -m 'fix: preserve Muse v15.3 Day3 and SILENT while repairing saved journeys and Kkami lifecycle'
-          git push origin HEAD:refs/heads/$REVIEW_BRANCH
+      - name: Continue real-input progression with per-stage diagnostics
+        run: python -u qa/continuation_driver_v15_3.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: muse-v15-3-targeted-evidence
+          name: muse-v15-3-resume-evidence
           retention-days: 7
           path: |
-            qa-build/
-            qa-continuation/
-            qa/v15_3_forwardport_manifest.json
+            qa-resume/
+            qa/continuation_driver_v15_3.py
             index.html
