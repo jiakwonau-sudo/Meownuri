@@ -1,0 +1,13 @@
+{
+  "run_id":37249361919,
+  "candidate_sha256":"a5c9665109b5c58e657cc989850736c134a1403c89df73a5a6f9f056703ff2ec",
+  "natural_artifact_id":11320741306,
+  "natural_artifact_sha256":"ea57c723494e1ee8fe77d54eb3694b76dc70d415be98122909e3b455d577a8e5",
+  "fresh_artifact_id":11320621627,
+  "fresh_artifact_sha256":"29cef387e69323b9e58c7d3e11e36ad9772d7882029c4f6d253b3354b7d09c3a",
+  "workflow_conclusion":"failure; natural passed, fresh interrupted after continue click",
+  "passed_case":{"name":"R03 repaired home return through actual ending","status":"PASS","seconds":190.4,"method":"same unmodified natural save and furniture, normal input and actual ending, not fresh start","detail":{"home_goal_arrived":true,"furniture_unchanged":true,"ending":true,"friend_active_after_ending":false,"errors":[]}},
+  "capture_warnings":[{"name":"R03_r2_bear_choice","error":"Page.screenshot timeout 12000ms"},{"name":"R03_r2_loss_ending","error":"Page.screenshot timeout 12000ms"}],
+  "fresh_incomplete":{"seconds":250.1,"error":"Locator.click on continue completed; subsequent automatic navigation wait timeout 15000ms","recorded_final_state":{"day":1,"phase":1,"mode":"play","homeJourney":true,"errors":[]}},
+  "note":"Transcribed from both downloaded results.json artifacts. Keep full artifacts; failed fresh run not counted as complete. Candidate bytes unchanged."
+}

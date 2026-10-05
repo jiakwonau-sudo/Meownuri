@@ -1,0 +1,51 @@
+name: Archive PARTIAL review candidate (not release)
+on:
+  push:
+    branches: ['review/meownuri-9-v15.2-20261005']
+    paths: ['.github/workflows/archive-partial-candidate.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: muse-v15-3-targeted-evidence
+          run-id: 37252095398
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: downloaded-evidence
+      - name: Preserve actual result status and exact candidate bytes
+        env:
+          REVIEW_BRANCH: review/meownuri-9-v15.2-20261005
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,json,hashlib,re
+          root=pathlib.Path('downloaded-evidence');q=root/'qa-continuation'
+          r=json.loads((q/'results.json').read_text())
+          assert not r.get('fatal') and [c['status'] for c in r['cases']]==['PASS','FAIL_OR_INCOMPLETE','PASS']
+          original=pathlib.Path('index.html').read_bytes()
+          assert hashlib.sha256(original).hexdigest()=='dfcde462fb211fcaa7a4128848f468a7fbd890c84dff72987bb07e2eb4a9ae68'
+          candidate=(q/'candidate_r2/index.html').read_bytes()
+          assert candidate==(root/'qa-build/index.html').read_bytes()
+          assert hashlib.sha256(candidate).hexdigest()=='954d6d00e930e2e95b3595caa69e1515de0d71962dbeccb2d78549214d18011c'
+          a=re.findall(r'<script[^>]*>(.*?)</script>',original.decode(),re.S)
+          b=re.findall(r'<script[^>]*>(.*?)</script>',candidate.decode(),re.S)
+          marker='/* ---------- 16. DAY 3: 마지막 아침 ---------- */'
+          assert a[:4]==b[:4] and a[-1].split(marker,1)[1]==b[-1].split(marker,1)[1]
+          assert candidate.decode().count('// SILENT:')==original.decode().count('// SILENT:')==5
+          m=r['manifest'];m.update(status='PARTIAL; DRAFT REVIEW ONLY; RELEASE GATE NOT PASSED',source_run_id=37252095398,source_test_commit='7267e0c8cc61a1a6910d817a1960da7e10b07406',source_run_conclusion='failure',checks=r['cases'],capture_warnings=r['capture_warnings'],browser_cases_passed=2,browser_cases_incomplete=1,fresh_run_completed=False,day3_playthrough_verified=False,public_deployment='NOT DEPLOYED; no main or Pages writes',limitations=['R03 home arrival observed and furniture preserved; later bear-choice wait timed out; whole case not passed','v15.2 fresh-play attempts incomplete, latest stopped at hidden Continue button; cause unresolved','Day3 code preserved verbatim, full Day3 play-through unverified','Original renderer on demand; physical Android, sound listening, FPS unverified','This archival workflow success is not game QA success'])
+          pathlib.Path('qa/v15_3_forwardport_manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2))
+          pathlib.Path('qa/v15_3_targeted_results.json').write_text(json.dumps(r,ensure_ascii=False,indent=2))
+          pathlib.Path('index.html').write_bytes(candidate)
+          PY
+          test "$(git ls-remote origin refs/heads/$REVIEW_BRANCH | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html qa/v15_3_forwardport_manifest.json qa/v15_3_targeted_results.json
+          git commit -m 'chore: archive PARTIAL Muse v15.3-r1 candidate for draft review, not release [skip ci]'
+          git push origin HEAD:refs/heads/$REVIEW_BRANCH
