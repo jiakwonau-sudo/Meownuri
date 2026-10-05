@@ -1,18 +1,31 @@
-"""Steer to a reachable interaction position, not a hard-coded occupied point.
-Game bytes, collision, clocks, completion assertions and real input are unchanged.
-The fixture preflight is separate; the subsequent full route starts empty.
+"""Use an outer-house approach for a UI interaction obstructed by furniture.
+Only the test player's ordinary key route changes. Game bytes stay identical.
+A natural-save preflight is separate from the subsequent empty-browser run.
 """
 from pathlib import Path
 import sys
 assert sys.argv[1:]==['fresh']
 bootstrap=Path('qa/retry_v15_2_fresh.py').read_text().split('try:\n    time.sleep(1)',1)[0]
 exec(compile(bootstrap,'qa/retry_v15_2_fresh.py','exec'),globals())
-R['retry_of']='37249942335: home restored and reached; driver targeted a point blocked by furniture/friend, outside the 4.5m interaction radius'
-R['driver_revision']='Read-only reachable ring sampling for home interactions; actual keys, no actor/quest mutation'
+R['retry_of']='37249942335 and 37250826122: driver approached the occupied side of home; journey restoration and companion arrival had succeeded'
+R['driver_revision']='Physical outer-house detour with staged waypoints; no changes to actors, furniture, clocks or quest state'
 previous_move_step=move_step
+route_pages={}
 def move_step(p,goal,stop=2.1):
-    resolved=p.evaluate('''()=>{const g=game,a=g.player;const home=g.stage===7&&((g.storyPhase===1&&g.homeReady)||(g.storyPhase===5&&g.clueLeadReady));if(!home||g.cut||g.ending)return null;const r=a.radius+.03,actors=g.otherActors(a),points=[];for(let i=0;i<32;i++){const ang=i*Math.PI/16,q={x:g.box.x+Math.sin(ang)*3.7,z:g.box.z+Math.cos(ang)*3.7};if(g.ground.safe(q.x,q.z,r,actors))points.push(q);}points.sort((a1,b1)=>Math.hypot(a1.x-a.x,a1.z-a.z)-Math.hypot(b1.x-a.x,b1.z-a.z));for(const q of points){if(Math.hypot(q.x-a.x,q.z-a.z)<.5||g.ground.path(a,q,r,actors).length)return q;}return null;}''')
-    return previous_move_step(p,resolved if resolved else goal,.35 if resolved else stop)
+    s=state(p)
+    home=s['stage']==7 and ((s['phase']==1 and s['homeReady']) or (s['phase']==5 and s['clueReady']))
+    if not home or s['cut'] or s['ending']:
+        return previous_move_step(p,goal,stop)
+    routes=route_pages.setdefault(p,{})
+    if s['phase'] not in routes:
+        box=target(p,'g.box')
+        routes[s['phase']]={'i':0,'waypoints':[{'x':box['x']+8,'z':box['z']+8},{'x':box['x']+8,'z':box['z']},{'x':box['x']+3.7,'z':box['z']}]}
+        R.setdefault('driver_events',[]).append({'event':'OUTER_HOME_APPROACH','phase':s['phase'],'waypoints':routes[s['phase']]['waypoints']});persist()
+    route=routes[s['phase']];i=route['i']
+    done=previous_move_step(p,route['waypoints'][i],.85 if i<2 else .4)
+    if done and i<2:route['i']+=1
+    return done and i==2
+
 def navigation_preflight(b):
     c,p=setup(b,True)
     try:
@@ -20,8 +33,7 @@ def navigation_preflight(b):
         p.evaluate('(s)=>localStorage.setItem("meownuri:MEOWNURI9:story:v3-wide",JSON.stringify(s))',saved)
         p.reload(wait_until='load');p.wait_for_function('!!window.game && !!window.__meowAgency',timeout=60000);p.wait_for_timeout(700)
         click_visible(p,'#continueBtn');p.locator('#continueBtn').wait_for(state='hidden',timeout=60000)
-        t=time.time();s=state(p)
-        assert s['phase']==1 and s['homeReady']
+        t=time.time();s=state(p);assert s['phase']==1 and s['homeReady']
         while time.time()-t<45:
             s=state(p)
             if s['action'] and '표지판' in s['action']['text']:
@@ -38,7 +50,7 @@ try:
         b=pw.chromium.launch(headless=True,args=['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage'])
         R['navigation_preflight']=navigation_preflight(b);persist()
         print('NAVIGATION_PREFLIGHT '+json.dumps(R['navigation_preflight'],ensure_ascii=False),flush=True)
-        case('v15.2-r1 fresh start through Day2 loss ending','separate empty browser; original clocks; real pointer and keyboard; two verified UI save/reloads; read-only geometry for navigation; no checkpoints, teleports or phase changes',lambda:continuous(b))
+        case('v15.2-r1 fresh start through Day2 loss ending','separate empty browser; original clocks; real pointer and keyboard; two verified UI save/reloads; geometry-assisted key navigation; no checkpoints, teleports or phase changes',lambda:continuous(b))
         b.close()
 except Exception as e:R['fatal']=str(e);R['trace']=traceback.format_exc()
 finally:
