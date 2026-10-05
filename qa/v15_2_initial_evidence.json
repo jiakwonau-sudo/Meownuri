@@ -1,0 +1,20 @@
+{
+  "run_id": 37247951908,
+  "artifact_id": 11320435676,
+  "artifact_sha256": "870b17459e3e88facb6c684bb8beadd387c31a26f4d47e5e1373e30d0bcbc0f1",
+  "candidate_sha256": "a5c9665109b5c58e657cc989850736c134a1403c89df73a5a6f9f056703ff2ec",
+  "original_workflow_conclusion": "failure",
+  "note": "Manually transcribed from downloaded results.json and completed job logs. Preserve the full artifact. Two interrupted cases below are not passes.",
+  "passed_cases": [
+    {"name":"v15.2 original R01/R02 reproduced","status":"PASS","seconds":29.9,"detail":{"home_journey_restored":false,"friend_active_after_loss":true,"errors":[]}},
+    {"name":"R03 original blocked destination reproduced","status":"PASS","seconds":47.8,"detail":{"target":{"x":10,"z":11.5},"blocked":true,"route_length":0}},
+    {"name":"R01 R02 retained in r2","status":"PASS","seconds":129.7,"detail":{"home_journey_restored":true,"friend_active_after_loss":false,"errors":[]}},
+    {"name":"v15.2-r1 mobile controls","status":"PASS","seconds":21.6,"method":"390x844 touch emulation, not physical Android performance"}
+  ],
+  "incomplete_cases": [
+    {"name":"R03 repaired home return through actual ending","status":"FAIL_OR_INCOMPLETE","seconds":193.3,"error":"Page.screenshot timeout 40000ms; home arrival captured, ending not yet completed"},
+    {"name":"v15.2-r1 fresh start through Day2 loss ending","status":"FAIL_OR_INCOMPLETE","seconds":227.5,"error":"Page.screenshot timeout 40000ms; fresh run stopped during Day1 bond sequence"}
+  ],
+  "unit_checks":{"save_wrapper":16,"home_goal":11,"syntax":9,"result":"PASS","evidence":"Completed CI job logs plus home/syntax artifact JSON; save-wrapper stdout was not written into artifact"},
+  "captured_png_count":15
+}

@@ -4,75 +4,88 @@ on:
     branches: ['review/meownuri-9-v15.2-20261005']
     paths: ['qa/**', '.github/workflows/forwardport-v15-2.yml']
 permissions:
-  contents: write
+  contents: read
 jobs:
-  verify:
+  retry:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        route: [natural, fresh]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Rebuild pinned v15.2 candidate and check preservation
+      - name: Install same test browser version
         run: |
-          python qa/apply_v15_2_r1.py index.html qa-build
-          node qa/unit_save_patch.cjs qa-build/agency.js
-          node qa/unit_home_goal_r2.mjs qa-build/index.html > qa-build/unit_home_results.json
-          python - <<'PY'
-          import re,json,base64,pathlib,subprocess
-          d=pathlib.Path('qa-build/syntax');d.mkdir()
-          scripts=re.findall(r'<script([^>]*)>(.*?)</script>',pathlib.Path('qa-build/index.html').read_text(),re.S)
-          for i,(a,t) in enumerate(scripts):
-              if 'importmap' in a:
-                  for n,u in json.loads(t)['imports'].items():(d/(n+'.mjs')).write_bytes(base64.b64decode(u.split(',',1)[1]))
-              else:(d/('inline'+str(i)+'.mjs')).write_text(t)
-          results=[]
-          for p in d.glob('*.mjs'):
-              r=subprocess.run(['node','--check',str(p)],capture_output=True,text=True)
-              results.append({'file':p.name,'pass':r.returncode==0,'error':r.stderr})
-          pathlib.Path('qa-build/syntax_results.json').write_text(json.dumps(results,indent=2))
-          assert len(results)==9 and all(r['pass'] for r in results),results
-          PY
-      - name: Install test browser
-        run: |
-          pip install playwright
+          pip install playwright==1.63.0
           python -m playwright install --with-deps chromium
-      - name: Reproduce original defects and exercise repaired game
-        run: python -u qa/check_v15_2.py
-      - name: Commit only the verified candidate to this review branch
+      - name: Complete only the previously interrupted route
+        run: python -u qa/retry_v15_2.py ${{ matrix.route }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v15-2-retry-${{ matrix.route }}
+          retention-days: 7
+          path: qa-continuation/
+  finalize:
+    needs: retry
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v15-2-retry-*
+          path: retry-evidence
+      - name: Check both results and preserve exact tested candidate
         env:
           REVIEW_BRANCH: review/meownuri-9-v15.2-20261005
         run: |
           set -euo pipefail
-          cmp qa-build/index.html qa-continuation/candidate_r2/index.html
           python - <<'PY'
-          import json,pathlib,hashlib
-          p=pathlib.Path('qa-continuation/results.json');r=json.loads(p.read_text())
-          assert not r.get('fatal') and len(r['cases'])==6 and all(c['status']=='PASS' for c in r['cases'])
-          m=json.loads(pathlib.Path('qa-build/manifest.json').read_text())
-          m['status']='DEFINED V15.2 FUNCTIONAL CHECKS PASS; NOT FULL RELEASE QA'
-          m['checks']=[{'name':c['name'],'status':c['status'],'seconds':c['seconds']} for c in r['cases']]
-          m['limitations']=['Original renderer on demand, not continuous FPS testing','No physical Android or audio-listening QA','Fresh route covers sacrifice ending; all choice combinations not replayed','Public main and live deployment unchanged']
-          pathlib.Path('qa/v15_2_forwardport_manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2))
+          import json,pathlib,hashlib,os
+          expected='a5c9665109b5c58e657cc989850736c134a1403c89df73a5a6f9f056703ff2ec'
+          prior=json.loads(pathlib.Path('qa/v15_2_initial_evidence.json').read_text())
+          assert prior['candidate_sha256']==expected and len(prior['passed_cases'])==4
+          combined=[dict(c,run_id=prior['run_id']) for c in prior['passed_cases']]
+          warnings=[];captured=[];html=None;manifest=None
+          for route in ('natural','fresh'):
+              root=pathlib.Path('retry-evidence')/('v15-2-retry-'+route)
+              r=json.loads((root/'results.json').read_text())
+              assert not r.get('fatal') and len(r['cases'])==1 and r['cases'][0]['status']=='PASS',r
+              raw=(root/'candidate_r2/index.html').read_bytes()
+              assert hashlib.sha256(raw).hexdigest()==expected
+              assert html is None or html==raw
+              html=raw;manifest=r['manifest']
+              combined.extend(dict(c,run_id=int(os.environ['GITHUB_RUN_ID'])) for c in r['cases'])
+              warnings.extend(r.get('capture_warnings',[]))
+              captured.extend(str(p) for p in root.glob('*.jpg'))
+          assert len(combined)==6 and len({c['name'] for c in combined})==6
+          manifest.update(status='DEFINED FUNCTIONAL ROUTES PASS ACROSS TWO RUNS; NOT FULL RELEASE QA',candidate_sha256=expected,checks=combined,
+              capture_warnings=warnings,retry_captured_images=captured,prior_run_conclusion='failure: two screenshot-interrupted routes, subsequently retried',
+              public_deployment='NOT DEPLOYED; main unchanged',
+              limitations=['Original renderer on demand, not continuous FPS testing','Physical Android, audio listening and all choice combinations unverified','Capture warnings are not visual QA passes','Historical directory candidate_r2 contains v15.2-r1; identify by SHA'])
+          pathlib.Path('qa/v15_2_forwardport_manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+          pathlib.Path('index.html').write_bytes(html)
           PY
           test "$(git ls-remote origin refs/heads/$REVIEW_BRANCH | cut -f1)" = "$GITHUB_SHA"
-          cp qa-build/index.html index.html
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html qa/v15_2_forwardport_manifest.json
-          git commit -m 'fix: preserve Muse v15.2 SILENT while repairing saved journeys and Kkami lifecycle'
+          git commit -m 'fix: retain Muse v15.2 SILENT and repair saved journeys and Kkami lifecycle'
           git push origin HEAD:refs/heads/$REVIEW_BRANCH
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: muse-v15-2-forwardport-evidence
+          name: v15-2-combined-verified-evidence
           retention-days: 7
           path: |
-            qa-build/
-            qa-continuation/
-            unit_save_patch_results.json
+            retry-evidence/
             qa/v15_2_forwardport_manifest.json
+            qa/v15_2_initial_evidence.json
+            index.html
