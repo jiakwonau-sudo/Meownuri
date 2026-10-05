@@ -1,0 +1,418 @@
+{
+  "manifest": {
+    "build": "MEOWNURI 9.0 / Muse v15.3-r1 QA candidate",
+    "source_sha256": "dfcde462fb211fcaa7a4128848f468a7fbd890c84dff72987bb07e2eb4a9ae68",
+    "candidate_sha256": "954d6d00e930e2e95b3595caa69e1515de0d71962dbeccb2d78549214d18011c",
+    "scope": [
+      "R01: ending-safe clue watchdog",
+      "R02: persisted journeys and legacy save recovery",
+      "R03: furniture-safe scripted home arrival, normal collision and movement retained"
+    ],
+    "unchanged": [
+      "story content",
+      "BGM",
+      "core importmap modules",
+      "save key and schema",
+      "no writes to current main by this review task"
+    ],
+    "status": "PARTIAL; DRAFT REVIEW ONLY; RELEASE GATE NOT PASSED",
+    "lineage": "Meta AI / Muse",
+    "modifier": "GPT-6 Astra Pro",
+    "base_commit": "08821042a218eefce81b4eb093794b6cc8eaba92",
+    "day3_verbatim_preserved": true,
+    "silent_edits_preserved": 5,
+    "public_deployment": "NOT DEPLOYED; no main or Pages writes",
+    "source_run_id": 37252095398,
+    "source_test_commit": "7267e0c8cc61a1a6910d817a1960da7e10b07406",
+    "source_run_conclusion": "failure",
+    "checks": [
+      {
+        "name": "v15.3 R01 R02 targeted save and ending guard",
+        "method": "seeded checkpoint, actual UI save/reload twice, original watchdog timer; not fresh play",
+        "status": "PASS",
+        "seconds": 24.5,
+        "detail": {
+          "home_journey_restored": true,
+          "friend_active_after_loss": false,
+          "errors": []
+        }
+      },
+      {
+        "name": "v15.3 R03 natural save through actual ending",
+        "method": "unaltered natural save and furniture, real keys/pointer and actual cinematics; no stage skipping",
+        "status": "FAIL_OR_INCOMPLETE",
+        "seconds": 140.7,
+        "error": "Locator.wait_for: Timeout 100000ms exceeded.\nCall log:\n  - waiting for locator(\"#choiceSacrifice\") to be visible\n",
+        "trace": "ired_home_and_ending\n    p.locator('#choiceSacrifice').wait_for(state='visible',timeout=100000)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py\", line 20696, in wait_for\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.wait_for(timeout=to_milliseconds(timeout), state=state)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_locator.py\", line 752, in wait_for\n    await self._frame.wait_for_selector(\n        self._selector, strict=True, timeout=timeout, state=state\n    )\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py\", line 395, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    )\n    ^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.TimeoutError: Locator.wait_for: Timeout 100000ms exceeded.\nCall log:\n  - waiting for locator(\"#choiceSacrifice\") to be visible\n\n"
+      },
+      {
+        "name": "v15.3 mobile controls",
+        "method": "390x844 touch/pointer emulation, not physical Android or FPS",
+        "status": "PASS",
+        "seconds": 96.4,
+        "detail": {
+          "stage": 0,
+          "phase": 0,
+          "day": 1,
+          "mode": "play",
+          "ending": false,
+          "cut": null,
+          "locked": false,
+          "rest": false,
+          "found": null,
+          "meet": 0,
+          "bond": null,
+          "homeJourney": false,
+          "homeReady": false,
+          "sunsetJourney": false,
+          "sunsetReady": false,
+          "clueLead": null,
+          "clueReady": false,
+          "player": {
+            "x": -35.968755863432094,
+            "y": 1,
+            "z": -29.588421989804527
+          },
+          "friend": {
+            "x": -32,
+            "z": 28,
+            "active": false
+          },
+          "bag": {
+            "wood": 0,
+            "fiber": 0,
+            "stone": 0,
+            "scrap": 0,
+            "fish": 0
+          },
+          "placement": null,
+          "action": null,
+          "quest": "삼색이는 혼자입니다. 바람에 날린 종이 조각을 따라가 보세요.",
+          "modal": false,
+          "modalText": "",
+          "errors": []
+        }
+      }
+    ],
+    "capture_warnings": [
+      {
+        "name": "r1_ending_watchdog",
+        "error": "Page.screenshot: Timeout 12000ms exceeded.\nCall log:\n  - taking page screenshot\n  - waiting for fonts to load...\n  - fonts loaded\n"
+      }
+    ],
+    "browser_cases_passed": 2,
+    "browser_cases_incomplete": 1,
+    "fresh_run_completed": false,
+    "day3_playthrough_verified": false,
+    "limitations": [
+      "R03 home arrival observed and furniture preserved; later bear-choice wait timed out; whole case not passed",
+      "v15.2 fresh-play attempts incomplete, latest stopped at hidden Continue button; cause unresolved",
+      "Day3 code preserved verbatim, full Day3 play-through unverified",
+      "Original renderer on demand; physical Android, sound listening, FPS unverified",
+      "This archival workflow success is not game QA success"
+    ]
+  },
+  "rendering": "original renderer on demand; unmodified game tick, timing, shaders",
+  "cases": [
+    {
+      "name": "v15.3 R01 R02 targeted save and ending guard",
+      "method": "seeded checkpoint, actual UI save/reload twice, original watchdog timer; not fresh play",
+      "status": "PASS",
+      "seconds": 24.5,
+      "detail": {
+        "home_journey_restored": true,
+        "friend_active_after_loss": false,
+        "errors": []
+      }
+    },
+    {
+      "name": "v15.3 R03 natural save through actual ending",
+      "method": "unaltered natural save and furniture, real keys/pointer and actual cinematics; no stage skipping",
+      "status": "FAIL_OR_INCOMPLETE",
+      "seconds": 140.7,
+      "error": "Locator.wait_for: Timeout 100000ms exceeded.\nCall log:\n  - waiting for locator(\"#choiceSacrifice\") to be visible\n",
+      "trace": "ired_home_and_ending\n    p.locator('#choiceSacrifice').wait_for(state='visible',timeout=100000)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/sync_api/_generated.py\", line 20696, in wait_for\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.wait_for(timeout=to_milliseconds(timeout), state=state)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_locator.py\", line 752, in wait_for\n    await self._frame.wait_for_selector(\n        self._selector, strict=True, timeout=timeout, state=state\n    )\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_frame.py\", line 395, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    )\n    ^\n  File \"/opt/hostedtoolcache/Python/3.13.15/x64/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.TimeoutError: Locator.wait_for: Timeout 100000ms exceeded.\nCall log:\n  - waiting for locator(\"#choiceSacrifice\") to be visible\n\n"
+    },
+    {
+      "name": "v15.3 mobile controls",
+      "method": "390x844 touch/pointer emulation, not physical Android or FPS",
+      "status": "PASS",
+      "seconds": 96.4,
+      "detail": {
+        "stage": 0,
+        "phase": 0,
+        "day": 1,
+        "mode": "play",
+        "ending": false,
+        "cut": null,
+        "locked": false,
+        "rest": false,
+        "found": null,
+        "meet": 0,
+        "bond": null,
+        "homeJourney": false,
+        "homeReady": false,
+        "sunsetJourney": false,
+        "sunsetReady": false,
+        "clueLead": null,
+        "clueReady": false,
+        "player": {
+          "x": -35.968755863432094,
+          "y": 1,
+          "z": -29.588421989804527
+        },
+        "friend": {
+          "x": -32,
+          "z": 28,
+          "active": false
+        },
+        "bag": {
+          "wood": 0,
+          "fiber": 0,
+          "stone": 0,
+          "scrap": 0,
+          "fish": 0
+        },
+        "placement": null,
+        "action": null,
+        "quest": "삼색이는 혼자입니다. 바람에 날린 종이 조각을 따라가 보세요.",
+        "modal": false,
+        "modalText": "",
+        "errors": []
+      }
+    }
+  ],
+  "milestones": [],
+  "frames": [
+    {
+      "name": "r1_restore",
+      "method": "injected home-journey checkpoint; UI save/reload",
+      "state": {
+        "stage": 7,
+        "phase": 1,
+        "day": 1,
+        "mode": "play",
+        "ending": false,
+        "cut": null,
+        "locked": false,
+        "rest": false,
+        "found": true,
+        "meet": 0,
+        "bond": 3,
+        "homeJourney": true,
+        "homeReady": false,
+        "sunsetJourney": false,
+        "sunsetReady": false,
+        "clueLead": null,
+        "clueReady": false,
+        "player": {
+          "x": -17,
+          "y": 0,
+          "z": 24
+        },
+        "friend": {
+          "x": -11.914809682271493,
+          "z": 24.900536014288637,
+          "active": true
+        },
+        "bag": {
+          "wood": 1,
+          "fiber": 0,
+          "stone": 0,
+          "scrap": 0,
+          "fish": 0
+        },
+        "placement": null,
+        "action": null,
+        "quest": "이제 둘이 집으로 돌아갑니다.",
+        "modal": false,
+        "modalText": "",
+        "errors": []
+      },
+      "capture_status": "CAPTURED"
+    },
+    {
+      "name": "r1_ending_watchdog",
+      "method": "injected terminal checkpoint; original watchdog timer runs normally",
+      "state": {
+        "stage": 7,
+        "phase": 5,
+        "day": 2,
+        "mode": "play",
+        "ending": true,
+        "cut": null,
+        "locked": true,
+        "rest": false,
+        "found": true,
+        "meet": 0,
+        "bond": 3,
+        "homeJourney": true,
+        "homeReady": false,
+        "sunsetJourney": false,
+        "sunsetReady": false,
+        "clueLead": null,
+        "clueReady": false,
+        "player": {
+          "x": -17,
+          "y": 0,
+          "z": 24
+        },
+        "friend": {
+          "x": -7.744247710148907,
+          "z": 22.701512428987698,
+          "active": false
+        },
+        "bag": {
+          "wood": 1,
+          "fiber": 0,
+          "stone": 0,
+          "scrap": 0,
+          "fish": 0
+        },
+        "placement": null,
+        "action": null,
+        "quest": "이제 둘이 집으로 돌아갑니다.",
+        "modal": true,
+        "modalText": "MEOWNURI 9.0 · ENDING\n집은 남았습니다. 친구는 없습니다.\nHOME: SAFE · FRIENDS: 0 · YOU: ALIVE\n\n곰은 약속을 지켰습니다. 그래서 더 이상합니다.\n집을 지킨 걸까요, 아니면 혼자 남은 걸까요?\n\n다시 그날로 돌아갈 수 있다면, 무엇을 준비하시겠습니까?\n🧱 집을 더 튼튼하게\n🐈 친구를 더 모으기\n🐟 먹이를 비축하기\n🕳️ 탈출로 만들기\n🛡️ 대응법 찾기\n\n하나를 골라 다음 회차의 결심으로 남길 수 있습니다.\n\n↻ 다시 시작한다",
+        "errors": []
+      },
+      "capture_status": "CAPTURE_INCOMPLETE"
+    },
+    {
+      "name": "R03_r2_home_arrived",
+      "method": "Same natural save and furniture; ordinary travel to nearby free home position",
+      "state": {
+        "stage": 7,
+        "phase": 5,
+        "day": 2,
+        "mode": "play",
+        "ending": false,
+        "cut": null,
+        "locked": false,
+        "rest": false,
+        "found": true,
+        "meet": 3,
+        "bond": 3,
+        "homeJourney": false,
+        "homeReady": true,
+        "sunsetJourney": true,
+        "sunsetReady": true,
+        "clueLead": null,
+        "clueReady": true,
+        "player": {
+          "x": 13.311496997851547,
+          "y": 2,
+          "z": 17.020112720781757
+        },
+        "friend": {
+          "x": 11.226476308377796,
+          "z": 12.014234537599686,
+          "active": true
+        },
+        "bag": {
+          "wood": 0,
+          "fiber": 0,
+          "stone": 0,
+          "scrap": 0,
+          "fish": 0
+        },
+        "placement": null,
+        "action": null,
+        "quest": "둘이 집까지 돌아왔습니다.",
+        "modal": false,
+        "modalText": "",
+        "errors": []
+      },
+      "capture_status": "CAPTURED"
+    },
+    {
+      "name": "r1_mobile",
+      "method": "390x844 pointer/touch emulation; no physical-device FPS claim",
+      "state": {
+        "stage": 0,
+        "phase": 0,
+        "day": 1,
+        "mode": "play",
+        "ending": false,
+        "cut": null,
+        "locked": false,
+        "rest": false,
+        "found": null,
+        "meet": 0,
+        "bond": null,
+        "homeJourney": false,
+        "homeReady": false,
+        "sunsetJourney": false,
+        "sunsetReady": false,
+        "clueLead": null,
+        "clueReady": false,
+        "player": {
+          "x": -35.968755863432094,
+          "y": 1,
+          "z": -29.588421989804527
+        },
+        "friend": {
+          "x": -32,
+          "z": 28,
+          "active": false
+        },
+        "bag": {
+          "wood": 0,
+          "fiber": 0,
+          "stone": 0,
+          "scrap": 0,
+          "fish": 0
+        },
+        "placement": null,
+        "action": null,
+        "quest": "삼색이는 혼자입니다. 바람에 날린 종이 조각을 따라가 보세요.",
+        "modal": false,
+        "modalText": "",
+        "errors": []
+      },
+      "capture_status": "CAPTURED"
+    }
+  ],
+  "prior_runs": [
+    "37238039338: original defects reproduced; r1 targeted fixes, ending animations and mobile checks passed",
+    "37238504715: fresh Day1, both UI reloads, Day2 reached; modal transition race",
+    "37239264528: player remained 1.5m in front of companion after sunset restore; navigation clearance added to driver, not game"
+  ],
+  "driver_revision": "4: visible pointer input and keyboard-only companion clearance; candidate unchanged",
+  "driver_events": [],
+  "build_target": "Muse v15.3-r1; new Day3 preserved verbatim",
+  "natural_fixture_origin": "Unmodified game.snapshot() from natural fresh run 37240016517, at 469.4 seconds immediately after fish scene",
+  "natural_fixture_sha256_canonical": "32d6fb3e2c15c5cd2f3c74761a0dcb2cda0a60641ff34932a76bfe73d1094815",
+  "capture_warnings": [
+    {
+      "name": "r1_ending_watchdog",
+      "error": "Page.screenshot: Timeout 12000ms exceeded.\nCall log:\n  - taking page screenshot\n  - waiting for fonts to load...\n  - fonts loaded\n"
+    }
+  ],
+  "source_run_id": "37252095398",
+  "scope": "Three targeted regression cases only; no fresh completion or Day3 play-through claim",
+  "prior_fresh_incomplete_runs": [
+    37247951908,
+    37249361919,
+    37249942335,
+    37250826122,
+    37251133721,
+    37251310548
+  ],
+  "reload_diagnostics": [
+    {
+      "url": "http://127.0.0.1:8776/qa-continuation/candidate_r2/",
+      "saveLength": 1178,
+      "continueHidden": false,
+      "mode": "title",
+      "errors": []
+    },
+    {
+      "url": "http://127.0.0.1:8776/qa-continuation/candidate_r2/",
+      "saveLength": 1178,
+      "continueHidden": false,
+      "mode": "title",
+      "errors": []
+    }
+  ]
+}
