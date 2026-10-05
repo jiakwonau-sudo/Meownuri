@@ -1,0 +1,78 @@
+name: Verify Muse v15.2 forward-port
+on:
+  push:
+    branches: ['review/meownuri-9-v15.2-20261005']
+    paths: ['qa/**', '.github/workflows/forwardport-v15-2.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild pinned v15.2 candidate and check preservation
+        run: |
+          python qa/apply_v15_2_r1.py index.html qa-build
+          node qa/unit_save_patch.cjs qa-build/agency.js
+          node qa/unit_home_goal_r2.mjs qa-build/index.html > qa-build/unit_home_results.json
+          python - <<'PY'
+          import re,json,base64,pathlib,subprocess
+          d=pathlib.Path('qa-build/syntax');d.mkdir()
+          scripts=re.findall(r'<script([^>]*)>(.*?)</script>',pathlib.Path('qa-build/index.html').read_text(),re.S)
+          for i,(a,t) in enumerate(scripts):
+              if 'importmap' in a:
+                  for n,u in json.loads(t)['imports'].items():(d/(n+'.mjs')).write_bytes(base64.b64decode(u.split(',',1)[1]))
+              else:(d/('inline'+str(i)+'.mjs')).write_text(t)
+          results=[]
+          for p in d.glob('*.mjs'):
+              r=subprocess.run(['node','--check',str(p)],capture_output=True,text=True)
+              results.append({'file':p.name,'pass':r.returncode==0,'error':r.stderr})
+          pathlib.Path('qa-build/syntax_results.json').write_text(json.dumps(results,indent=2))
+          assert len(results)==9 and all(r['pass'] for r in results),results
+          PY
+      - name: Install test browser
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Reproduce original defects and exercise repaired game
+        run: python -u qa/check_v15_2.py
+      - name: Commit only the verified candidate to this review branch
+        env:
+          REVIEW_BRANCH: review/meownuri-9-v15.2-20261005
+        run: |
+          set -euo pipefail
+          cmp qa-build/index.html qa-continuation/candidate_r2/index.html
+          python - <<'PY'
+          import json,pathlib,hashlib
+          p=pathlib.Path('qa-continuation/results.json');r=json.loads(p.read_text())
+          assert not r.get('fatal') and len(r['cases'])==6 and all(c['status']=='PASS' for c in r['cases'])
+          m=json.loads(pathlib.Path('qa-build/manifest.json').read_text())
+          m['status']='DEFINED V15.2 FUNCTIONAL CHECKS PASS; NOT FULL RELEASE QA'
+          m['checks']=[{'name':c['name'],'status':c['status'],'seconds':c['seconds']} for c in r['cases']]
+          m['limitations']=['Original renderer on demand, not continuous FPS testing','No physical Android or audio-listening QA','Fresh route covers sacrifice ending; all choice combinations not replayed','Public main and live deployment unchanged']
+          pathlib.Path('qa/v15_2_forwardport_manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2))
+          PY
+          test "$(git ls-remote origin refs/heads/$REVIEW_BRANCH | cut -f1)" = "$GITHUB_SHA"
+          cp qa-build/index.html index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html qa/v15_2_forwardport_manifest.json
+          git commit -m 'fix: preserve Muse v15.2 SILENT while repairing saved journeys and Kkami lifecycle'
+          git push origin HEAD:refs/heads/$REVIEW_BRANCH
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: muse-v15-2-forwardport-evidence
+          retention-days: 7
+          path: |
+            qa-build/
+            qa-continuation/
+            unit_save_patch_results.json
+            qa/v15_2_forwardport_manifest.json
