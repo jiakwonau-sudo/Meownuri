@@ -4,74 +4,54 @@ on:
     branches: ['review/meownuri-9-v15.2-20261005']
     paths: ['qa/**', '.github/workflows/forwardport-v15-2.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  retry:
+  verify-fresh:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        route: [natural, fresh]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Install same test browser version
+      - name: Install same browser
         run: |
           pip install playwright==1.63.0
           python -m playwright install --with-deps chromium
-      - name: Complete only the previously interrupted route
-        run: python -u qa/retry_v15_2.py ${{ matrix.route }}
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: v15-2-retry-${{ matrix.route }}
-          retention-days: 7
-          path: qa-continuation/
-  finalize:
-    needs: retry
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: v15-2-retry-*
-          path: retry-evidence
-      - name: Check both results and preserve exact tested candidate
+      - name: Complete remaining fresh route with explicit pointer handling
+        run: python -u qa/retry_v15_2_fresh.py fresh
+      - name: Verify accumulated evidence and commit exact tested candidate only
         env:
           REVIEW_BRANCH: review/meownuri-9-v15.2-20261005
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json,pathlib,hashlib,os
+          import pathlib,json,hashlib,os
           expected='a5c9665109b5c58e657cc989850736c134a1403c89df73a5a6f9f056703ff2ec'
           prior=json.loads(pathlib.Path('qa/v15_2_initial_evidence.json').read_text())
-          assert prior['candidate_sha256']==expected and len(prior['passed_cases'])==4
+          natural=json.loads(pathlib.Path('qa/v15_2_natural_evidence.json').read_text())
+          fresh=json.loads(pathlib.Path('qa-continuation/results.json').read_text())
+          assert prior['candidate_sha256']==natural['candidate_sha256']==expected
+          assert len(prior['passed_cases'])==4 and all(c['status']=='PASS' for c in prior['passed_cases'])
+          assert natural['passed_case']['status']=='PASS'
+          assert not fresh.get('fatal') and len(fresh['cases'])==1 and fresh['cases'][0]['status']=='PASS'
+          detail=fresh['cases'][0]['detail']
+          assert detail['completed'] and set(detail['ui_save_reload_stages'])=={'home','sunset'}
+          assert detail['ending']['ending'] and not detail['ending']['friend']['active'] and not detail['ending']['errors']
+          raw=pathlib.Path('qa-continuation/candidate_r2/index.html').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()==expected
           combined=[dict(c,run_id=prior['run_id']) for c in prior['passed_cases']]
-          warnings=[];captured=[];html=None;manifest=None
-          for route in ('natural','fresh'):
-              root=pathlib.Path('retry-evidence')/('v15-2-retry-'+route)
-              r=json.loads((root/'results.json').read_text())
-              assert not r.get('fatal') and len(r['cases'])==1 and r['cases'][0]['status']=='PASS',r
-              raw=(root/'candidate_r2/index.html').read_bytes()
-              assert hashlib.sha256(raw).hexdigest()==expected
-              assert html is None or html==raw
-              html=raw;manifest=r['manifest']
-              combined.extend(dict(c,run_id=int(os.environ['GITHUB_RUN_ID'])) for c in r['cases'])
-              warnings.extend(r.get('capture_warnings',[]))
-              captured.extend(str(p) for p in root.glob('*.jpg'))
+          combined.append(dict(natural['passed_case'],run_id=natural['run_id']))
+          combined.append(dict(fresh['cases'][0],run_id=int(os.environ['GITHUB_RUN_ID'])))
           assert len(combined)==6 and len({c['name'] for c in combined})==6
-          manifest.update(status='DEFINED FUNCTIONAL ROUTES PASS ACROSS TWO RUNS; NOT FULL RELEASE QA',candidate_sha256=expected,checks=combined,
-              capture_warnings=warnings,retry_captured_images=captured,prior_run_conclusion='failure: two screenshot-interrupted routes, subsequently retried',
-              public_deployment='NOT DEPLOYED; main unchanged',
-              limitations=['Original renderer on demand, not continuous FPS testing','Physical Android, audio listening and all choice combinations unverified','Capture warnings are not visual QA passes','Historical directory candidate_r2 contains v15.2-r1; identify by SHA'])
-          pathlib.Path('qa/v15_2_forwardport_manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
-          pathlib.Path('index.html').write_bytes(html)
+          m=fresh['manifest'];m.update(candidate_sha256=expected,status='DEFINED FUNCTIONAL ROUTES PASS ACROSS THREE RUNS; NOT FULL RELEASE QA',checks=combined,
+            capture_warnings=natural['capture_warnings']+fresh.get('capture_warnings',[]),
+            historical_failed_runs=[prior['run_id'],natural['run_id']],
+            source_test_commit=os.environ['GITHUB_SHA'],
+            public_deployment='NOT DEPLOYED; main unchanged',
+            limitations=['Original renderer on demand, not continuous FPS testing','Physical Android, audio listening and all choice combinations unverified','Capture warnings are not visual QA passes','Historical candidate_r2 directory contains exact v15.2-r1; identify by hash'])
+          pathlib.Path('qa/v15_2_forwardport_manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2))
+          pathlib.Path('index.html').write_bytes(raw)
           PY
           test "$(git ls-remote origin refs/heads/$REVIEW_BRANCH | cut -f1)" = "$GITHUB_SHA"
           git config user.name 'github-actions[bot]'
@@ -82,10 +62,11 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: v15-2-combined-verified-evidence
+          name: v15-2-final-fresh-evidence
           retention-days: 7
           path: |
-            retry-evidence/
+            qa-continuation/
             qa/v15_2_forwardport_manifest.json
             qa/v15_2_initial_evidence.json
+            qa/v15_2_natural_evidence.json
             index.html
