@@ -1,0 +1,27 @@
+name: MEOWNURI SOL v16 public preview verification
+on:
+  push:
+    branches:
+      - feat/sol-v16-day01-10-20261011
+    paths:
+      - .github/workflows/sol-v16-preview-qa.yml
+  workflow_dispatch:
+jobs:
+  public-http-sha:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Verify public HTTPS 200 and deployed build checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET=https://meownuri-sol-v16-story-preview.vercel.app/
+          curl -fsSL --retry 2 --retry-delay 3 --max-time 50 "$TARGET" -o live.html
+          EXPECTED=cccaa222acf1f6052aa11f11ce6b17ccaf215c284be2055f9b1e6ed4754b4a60
+          ACTUAL=$(sha256sum live.html | cut -d' ' -f1)
+          echo "deployment_sha256=$ACTUAL"
+          echo "expected_sha256=$EXPECTED"
+          test "$ACTUAL" = "$EXPECTED"
+          grep -q 'solStoryDay04to10' live.html
+          grep -q 'v16.0' live.html
+          echo 'PASS: publicly accessible HTTPS build is byte-identical to the tested SOL v16.0 file.'
