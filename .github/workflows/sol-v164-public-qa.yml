@@ -45,15 +45,15 @@ jobs:
               await page.locator('#solGiftReviewEntry button').click({timeout:40000});
               await page.waitForFunction(()=>window.game?.cut?.scene==='bond',{timeout:30000});
               console.log('rendererMode='+await page.evaluate(()=>game.rendererMode));
-              for(const [at,expected] of [[43,'🪵💛'],[51.1,'🪵🍽️❔'],[56.8,'😋❔'],[61.2,'😖'],[66,'😅'],[72,'💛']]){
+              for(const [at,expected] of [[43,'🪵💛'],[46.8,null],[51.1,'🪵🍽️❔'],[56.8,'😋❔'],[61.2,'😖'],[66,'😅'],[72,'💛']]){
                 const state=await page.evaluate(t=>{
                   while(game.cut?.scene==='bond'&&game.cut.time<t)game.tick(.05);
                   game.renderer.render(game.scene,game.camera);
                   return {t:game.cut?.time,wood:!!game.giftWood?.visible,emoji:window.__MEOWNURI_ROMANCE_EMOJI_QA__?.emoji,scene:game.cut?.scene};
                 },at);
                 console.log(at,JSON.stringify(state));
-                if(!state.wood||state.emoji!==expected)throw new Error('Unexpected wood-comedy scene: '+at+' '+JSON.stringify(state));
-                if(at===51.1||at===56.8)await page.screenshot({path:'wood-'+at+'.png'});
+                if(!state.wood||(state.emoji??null)!==expected)throw new Error('Unexpected wood-comedy scene: '+at+' '+JSON.stringify(state));
+                if(at===46.8||at===51.1||at===56.8){await page.waitForTimeout(420);await page.screenshot({path:'wood-'+at+'.png'});}
               }
               const final=await page.evaluate(()=>{
                 while(game.cut?.scene==='bond'&&game.cut.time<89)game.tick(.05);
