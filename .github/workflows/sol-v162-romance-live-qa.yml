@@ -22,7 +22,7 @@ jobs:
           python3 - <<'PYTEST'
           import re, json, base64
           s=open('stable.html',encoding='utf8').read()
-          assert 'v16.2' in s and 'scene=gift' in s
+          assert 'v16.2' in s and 'solGiftReviewEntry' in s
           m=re.search(r'<script type="importmap">(.*?)</script>',s,re.S)
           assert m
           raw=json.loads(m.group(1))['imports']['client']
