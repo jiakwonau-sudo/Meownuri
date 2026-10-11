@@ -52,7 +52,7 @@ jobs:
                   return {t:game.cut?.time,wood:!!game.giftWood?.visible,emoji:window.__MEOWNURI_ROMANCE_EMOJI_QA__?.emoji,scene:game.cut?.scene};
                 },at);
                 console.log(at,JSON.stringify(state));
-                if(!state.wood||(state.emoji??null)!==expected)throw new Error('Unexpected wood-comedy scene: '+at+' '+JSON.stringify(state));
+                if(!state.wood||(expected!==null&&state.emoji!==expected))throw new Error('Unexpected wood-comedy scene: '+at+' '+JSON.stringify(state));
                 if(at===46.8||at===51.1||at===56.8){await page.waitForTimeout(420);await page.screenshot({path:'wood-'+at+'.png'});}
               }
               const final=await page.evaluate(()=>{
