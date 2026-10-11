@@ -1,0 +1,82 @@
+name: SOL v16.9 Day4 overlay public QA
+on:
+  push:
+    branches: [feat/sol-v16.9-day4-hud-dismiss-20261012]
+    paths: [.github/workflows/sol-v169-public-qa.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-public-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Vercel preview bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 80 --retry 3 "https://meownuri-sol-v16-story-preview-j0sugxghl.vercel.app/" -o /tmp/index.html
+          sha256sum /tmp/index.html
+          test "$(sha256sum /tmp/index.html | awk '{print $1}')" = "855948d713ea45bb41a97e35c3a11d00a4da0c1a8e8b89199b7201b37e96d048"
+          grep -q 'solMissionHudV169' /tmp/index.html
+      - name: Install Playwright
+        run: npm install --no-save playwright@1.56.1
+      - name: Run real mobile browser regression
+        shell: bash
+        run: |
+          node <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox','--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+            const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+            const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+            try{
+              await page.goto('https://meownuri-sol-v16-story-preview-j0sugxghl.vercel.app/',{waitUntil:'domcontentloaded',timeout:60000});
+              await page.waitForFunction(()=>window.game&&window.MeownuriStory&&window.MeownuriPlayable&&window.__SOL_MISSION_HUD_V169__?.buttonsEnabled,null,{timeout:30000});
+              await page.locator('#solStartDay4').click({timeout:10000});
+              await page.waitForFunction(()=>window.MeownuriStory.getCurrent().day===4);
+              const state=()=>page.evaluate(()=>({day:MeownuriStory.getCurrent().day,beat:MeownuriStory.getCurrent().beat,finished:MeownuriStory.getCurrent().finished,visible:getComputedStyle(document.querySelector('#solStoryPanel')).visibility,cta:document.querySelector('#solMissionDoV169').textContent,dock:document.querySelector('#solMissionDockV169').hidden}));
+              await page.waitForTimeout(400);
+              let s=await state();console.log('Default',s);
+              if(s.visible!=='hidden'||s.dock)throw Error('Persistent center overlay still visible');
+              await page.locator('#solMissionMoreV169').click();
+              s=await state();if(s.visible!=='visible')throw Error('Expand failed');
+              await page.locator('#solGuideCloseV169').click();
+              s=await state();if(s.visible!=='hidden')throw Error('Close failed');
+              const go=async()=>{
+                let r=await state();
+                if(r.cta.includes('이동')){
+                  await page.locator('#solMissionDoV169').click();
+                  await page.waitForFunction(()=>document.querySelector('#solMissionDoV169')?.textContent?.includes('행동'),null,{timeout:25000});
+                  r=await state();
+                }
+                if(!r.cta.includes('행동'))throw Error('Walk did not enable action: '+JSON.stringify(r));
+                await page.locator('#solMissionDoV169').click();
+                await page.waitForTimeout(230);
+              };
+              await go();await go();
+              s=await state();console.log('DAY4 3/5',s);
+              if(s.beat!==2||s.visible!=='hidden')throw Error('Day4 3/5 overlay regression');
+              await page.screenshot({path:'day4-3of5-hud-fixed.png'});
+              await page.locator('#solMissionQuietV169').click();
+              if(await page.locator('#solMissionDoV169').isVisible())throw Error('Quiet failed');
+              await page.locator('#solMissionMoreV169').click();
+              if(!await page.locator('#solMissionDoV169').isVisible())throw Error('Restore failed');
+              await go();await go();await go();
+              s=await state();console.log('DAY4 finished',s);
+              if(!s.finished||!s.cta.includes('DAY 5'))throw Error('Day4 progression failed');
+              await page.locator('#solMissionDoV169').click();
+              await page.waitForTimeout(300);s=await state();console.log('DAY5 start',s);
+              if(s.day!==5||s.finished||s.visible!=='hidden')throw Error('Day5 transition failed');
+              if(errors.length)throw Error('JavaScript errors: '+errors.slice(0,5).join('\n'));
+              console.log('PASS: real mobile browser Day4 center overlay fixed, Day5 reached');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sol-v169-day4-hud-qa
+          path: day4-3of5-hud-fixed.png
+          if-no-files-found: ignore
