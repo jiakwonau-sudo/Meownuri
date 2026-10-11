@@ -1,0 +1,93 @@
+{
+  "tested_at": "2026-10-11",
+  "mode": "about:blank + set_content, Chromium 2D software fallback, mocked in-memory localStorage",
+  "results": [
+    {
+      "case": "Boot 390x844 2D fallback",
+      "ok": true,
+      "detail": "MEOWNURI 9.0 · WIDE WORLD v16.8 · WOOD BITE + TAP · DAY 1–10"
+    },
+    {
+      "case": "TAP init unique",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "case": "Day4 start button",
+      "ok": true,
+      "detail": "{'day': 4, 'beat': 0, 'total': 5, 'finished': False, 'unlocked': 4, 'choices': {'day3_bear_choice': 'help', 'day3_departure': 'leave'}, 'characters': ['모카', '호박', '할미'], 'props': ['fire', 'fish', 'sign', 'tree']}"
+    },
+    {
+      "case": "Auto-walk reaches first target",
+      "ok": true,
+      "detail": "distance 2.63m"
+    },
+    {
+      "case": "Day4 first actual action click",
+      "ok": true,
+      "detail": "{'day': 4, 'beat': 1, 'total': 5, 'finished': False, 'unlocked': 4, 'choices': {'day3_bear_choice': 'help', 'day3_departure': 'leave'}, 'characters': ['모카', '호박', '할미'], 'props': ['fire', 'fish', 'sign', 'tree']}"
+    },
+    {
+      "case": "Day4 completion via UI",
+      "ok": true,
+      "detail": "4 beat clicks"
+    },
+    {
+      "case": "Day5 completion via UI",
+      "ok": true,
+      "detail": "5 beat clicks"
+    },
+    {
+      "case": "Day6 completion via UI",
+      "ok": true,
+      "detail": "5 beat clicks"
+    },
+    {
+      "case": "Day7 completion via UI",
+      "ok": true,
+      "detail": "6 beat clicks"
+    },
+    {
+      "case": "Day8 completion via UI",
+      "ok": true,
+      "detail": "4 beat clicks"
+    },
+    {
+      "case": "Day9 completion via UI",
+      "ok": true,
+      "detail": "4 beat clicks"
+    },
+    {
+      "case": "Day10 completion via UI",
+      "ok": true,
+      "detail": "4 beat clicks"
+    },
+    {
+      "case": "Day10 ending Bridge path",
+      "ok": true,
+      "detail": "{'day': 10, 'beat': 4, 'total': 4, 'finished': True, 'unlocked': 10, 'choices': {'day3_bear_choice': 'help', 'day3_departure': 'leave', 'day4_roles': {'모카': '낚시', '호박': '약초', '까미': '정찰', '할미': '치료'}, 'day5_share_choice': 0, 'village_name': '냥누리 마을', 'day9_kingdom_choice': 2}, 'characters': ['모카', '호박', '할미', '콩이', '바람', '레오'], 'props': ['garden', 'gate', 'sign', 'marker', 'garden', 'marker', 'garden', 'marker', 'marker', 'marker', 'marker', 'marker', 'marker', 'marker', 'marker', 'marker', 'marker']}"
+    },
+    {
+      "case": "No pageerrors through Day10",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "case": "Gift cutscene TAP eligible",
+      "ok": true,
+      "detail": "{'kind': 'story', 'scene': 'bond', 'mode': 'play', 'film': True}"
+    },
+    {
+      "case": "Tap advances story timer",
+      "ok": true,
+      "detail": "0.88 -> 8.27"
+    },
+    {
+      "case": "TAP no new pageerror",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "passed": 17,
+  "failed": 0
+}
