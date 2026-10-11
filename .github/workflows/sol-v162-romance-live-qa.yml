@@ -1,0 +1,34 @@
+name: MEOWNURI SOL v16.2 live smoke
+on:
+  push:
+    branches: [feat/sol-v16-day01-10-20261011]
+    paths: [.github/workflows/sol-v162-romance-live-qa.yml]
+  workflow_dispatch:
+jobs:
+  verify-public-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify public game and scene link
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=https://meownuri-sol-v16-story-preview.vercel.app/
+          IMMUTABLE=https://meownuri-sol-v16-story-preview-gx37voi33.vercel.app/
+          curl -fsSL --retry 3 --retry-delay 2 --max-time 45 "$BASE" -o stable.html
+          curl -fsSL --retry 3 --retry-delay 2 --max-time 45 "$IMMUTABLE?scene=gift" -o gift.html
+          test "$(sha256sum stable.html | awk '{print $1}')" = "eae2fef437f4606f1744cbef93158727a76b82d258194d32a5b9f0542ceff57e"
+          cmp stable.html gift.html
+          python3 - <<'PYTEST'
+          import re, json, base64
+          s=open('stable.html',encoding='utf8').read()
+          assert 'v16.2' in s and 'scene=gift' in s
+          m=re.search(r'<script type="importmap">(.*?)</script>',s,re.S)
+          assert m
+          raw=json.loads(m.group(1))['imports']['client']
+          client=base64.b64decode(raw.split(',',1)[1]).decode()
+          for symbol in ('romanceCutscene(dt,c)','romanceMicro(c)','renderRomance2D()','romanceSound(kind)'):
+              assert symbol in client, symbol
+          assert "if(c.scene==='bond'){this.romanceCutscene(dt,c);return}" in client
+          print('PASS: real public HTTPS, sha256, wordless scene module and direct-link markup')
+          PYTEST
