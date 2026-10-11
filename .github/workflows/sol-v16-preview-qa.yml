@@ -1,4 +1,4 @@
-name: MEOWNURI SOL v16 public preview verification
+name: MEOWNURI SOL v16.3 emoji preview verification
 on:
   push:
     branches:
@@ -11,17 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - name: Verify public HTTPS 200 and deployed build checksum
+      - name: Verify public HTTPS and exact v16.3 emoji build
         shell: bash
         run: |
           set -euo pipefail
-          TARGET=https://meownuri-sol-v16-story-preview.vercel.app/
-          curl -fsSL --retry 2 --retry-delay 3 --max-time 50 "$TARGET" -o live.html
-          EXPECTED=cccaa222acf1f6052aa11f11ce6b17ccaf215c284be2055f9b1e6ed4754b4a60
+          TARGET=https://meownuri-sol-v16-story-preview.vercel.app/?scene=gift
+          curl -fsSL --retry 3 --retry-delay 5 --max-time 60 "$TARGET" -o live.html
+          EXPECTED=ef7eb4cd1a1250b704a8f7d420dd57d82adf7da371b5d1d5c5c8bc1e8c12dc5c
           ACTUAL=$(sha256sum live.html | cut -d' ' -f1)
           echo "deployment_sha256=$ACTUAL"
           echo "expected_sha256=$EXPECTED"
           test "$ACTUAL" = "$EXPECTED"
+          grep -q 'solEmojiBalloonStyle' live.html
+          grep -q 'v16.3' live.html
           grep -q 'solStoryDay04to10' live.html
-          grep -q 'v16.0' live.html
-          echo 'PASS: publicly accessible HTTPS build is byte-identical to the tested SOL v16.0 file.'
+          echo 'PASS: Public SOL v16.3 emoji preview matches the locally browser-tested HTML.'
