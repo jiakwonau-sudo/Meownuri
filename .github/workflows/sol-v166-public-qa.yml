@@ -1,0 +1,75 @@
+name: MEOWNURI SOL v16.6 wood joke public preview QA
+on:
+  push:
+    branches: [feat/sol-v16.6-wood-cutaway-20261011]
+    paths: [.github/workflows/sol-v166-public-qa.yml]
+  workflow_dispatch:
+jobs:
+  public-wood-comedy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify public v16.6 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 --retry-delay 3 --max-time 75 'https://meownuri-sol-v16-story-preview-f1ok8azxi.vercel.app/' -o /tmp/sol-v164.html
+          EXPECTED='d61e0527e8ad1d1259488fc6f228a2fe7647ab494e3c947644bf4b60647143c4'
+          ACTUAL=$(sha256sum /tmp/sol-v164.html | awk '{print $1}')
+          echo "public_sha256=$ACTUAL"
+          python3 - <<'PYREMOTE'
+          from pathlib import Path
+          a=Path("index.html").read_bytes()
+          b=Path("/tmp/sol-v164.html").read_bytes()
+          i=next((k for k in range(min(len(a),len(b))) if a[k]!=b[k]), min(len(a),len(b)))
+          print("repo_bytes=",len(a),"public_bytes=",len(b),"first_mismatch=",i)
+          print("repo_context=",repr(a[max(0,i-50):i+100]))
+          print("public_context=",repr(b[max(0,i-50):i+240]))
+          assert b"v16.6" in b and len(b)>1300000
+          PYREMOTE
+          echo "PASS: public page is reachable; browser function test follows"
+      - name: Install browser test
+        run: npm install --no-save playwright@1.56.1
+      - name: Browser wood-comedy QA
+        shell: bash
+        run: |
+          node <<'NODE'
+          const { chromium }=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({channel:'chrome',headless:true,args:['--use-angle=swiftshader','--enable-webgl','--enable-unsafe-swiftshader','--no-sandbox']});
+            try{
+              const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+              const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+              await page.goto('https://meownuri-sol-v16-story-preview-f1ok8azxi.vercel.app/?scene=gift',{waitUntil:'domcontentloaded',timeout:60000});
+              await page.locator('#solGiftReviewEntry button').click({timeout:40000});
+              await page.waitForFunction(()=>window.game?.cut?.scene==='bond',{timeout:30000});
+              console.log('rendererMode='+await page.evaluate(()=>game.rendererMode));
+              for(const [at,expected] of [[43,'🪵💛'],[46.8,null],[51.1,'🪵🍽️❔'],[56.8,'😋❔'],[61.2,'😖'],[66,'😅'],[72,'💛']]){
+                const state=await page.evaluate(t=>{
+                  while(game.cut?.scene==='bond'&&game.cut.time<t)game.tick(.05);
+                  game.renderer.render(game.scene,game.camera);
+                  return {t:game.cut?.time,wood:!!game.giftWood?.visible,hero:!!game._solWoodHero?.visible,emoji:window.__MEOWNURI_ROMANCE_EMOJI_QA__?.emoji,scene:game.cut?.scene};
+                },at);
+                console.log(at,JSON.stringify(state));
+                if(!state.wood||(at===46.8&&!state.hero)||(at===56.8&&!state.hero)||(expected!==null&&state.emoji!==expected))throw new Error('Unexpected wood-comedy scene: '+at+' '+JSON.stringify(state));
+                if(at===43||at===46.8||at===51.1||at===56.8){await page.waitForTimeout(420);await page.screenshot({path:'wood-'+at+'.png'});}
+              }
+              const final=await page.evaluate(()=>{
+                while(game.cut?.scene==='bond'&&game.cut.time<89)game.tick(.05);
+                return {phase:game.storyPhase,cut:game.cut,friendToken:game.friendToken};
+              });
+              if(final.phase!==1||final.cut!==null||!final.friendToken)throw new Error('Story did not resume: '+JSON.stringify(final));
+              if(errors.length)throw new Error('Browser errors: '+JSON.stringify(errors));
+              console.log('PASS: preview browser wood comedy and game resume');
+              await page.close();
+            }finally{await browser.close();}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sol-v164-public-wood-comedy-screenshots
+          path: wood-*.png
+          if-no-files-found: ignore
