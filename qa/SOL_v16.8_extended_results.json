@@ -1,0 +1,37 @@
+{
+  "mode": "2D fallback; in-memory storage shim; Chrome headless; real UI clicks / direct QA test setup for Day9",
+  "results": [
+    {
+      "test": "17 manual TAP gestures accepted",
+      "pass": true,
+      "detail": "17 attempted, 17 accepted"
+    },
+    {
+      "test": "Wood prop visible during nibble scene",
+      "pass": true,
+      "detail": "[(56.22158999999999, True), (57.92158999999998, True), (61.021589999999996, True)]"
+    },
+    {
+      "test": "No JS page error in romance gestures",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "test": "Ending kingdom",
+      "pass": true,
+      "detail": "{'day': 10, 'beat': 4, 'total': 4, 'finished': True, 'unlocked': 10, 'choices': {'day3_bear_choice': 'help', 'day3_departure': 'leave', 'day9_kingdom_choice': 0}, 'characters': ['모카', '호박', '할미', '콩이'"
+    },
+    {
+      "test": "Ending village",
+      "pass": true,
+      "detail": "{'day': 10, 'beat': 4, 'total': 4, 'finished': True, 'unlocked': 10, 'choices': {'day3_bear_choice': 'help', 'day3_departure': 'leave', 'day9_kingdom_choice': 1}, 'characters': ['모카', '호박', '할미', '콩이'"
+    },
+    {
+      "test": "Ending bridge",
+      "pass": true,
+      "detail": "{'day': 10, 'beat': 4, 'total': 4, 'finished': True, 'unlocked': 10, 'choices': {'day3_bear_choice': 'help', 'day3_departure': 'leave', 'day9_kingdom_choice': 2}, 'characters': ['모카', '호박', '할미', '콩이'"
+    }
+  ],
+  "passed": 6,
+  "failed": 0
+}
