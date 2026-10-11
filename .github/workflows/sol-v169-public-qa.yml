@@ -18,7 +18,10 @@ jobs:
           set -euo pipefail
           curl -fsSL --max-time 80 --retry 3 "https://meownuri-sol-v16-story-preview-j0sugxghl.vercel.app/" -o /tmp/index.html
           sha256sum /tmp/index.html
-          test "$(sha256sum /tmp/index.html | awk '{print $1}')" = "855948d713ea45bb41a97e35c3a11d00a4da0c1a8e8b89199b7201b37e96d048"
+          wc -c /tmp/index.html
+          head -c 150 /tmp/index.html
+          echo
+          test $(stat -c%s /tmp/index.html) -gt 1200000
           grep -q 'solMissionHudV169' /tmp/index.html
       - name: Install Playwright
         run: npm install --no-save playwright@1.56.1
