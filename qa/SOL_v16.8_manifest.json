@@ -1,0 +1,10 @@
+{
+  "build": "SOL v16.8",
+  "kind": "preview candidate",
+  "base_sha256": "64b3c1423fa5448a06937b657daf3b96e7488ed185549ebdffd99fa22b298f2c",
+  "tap_sha256": "1e871b926f6d80ed0d0b9b1c19ca950b8597a602239da36c6545031379291fe2",
+  "output_sha256": "b93c85d3c4a9fb087d522cee26a793011d11456e282e4d3c2f15d54aa5aee2ec",
+  "method": "add TAP cinematic controller script from v16.5 to v16.7 without modifying embedded game engines; bump display version",
+  "independent_3d_test": "pending",
+  "legacy_main": "unchanged"
+}
