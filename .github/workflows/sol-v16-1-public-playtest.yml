@@ -1,0 +1,29 @@
+name: MEOWNURI SOL v16.1 public playable smoke
+on:
+  push:
+    branches:
+      - feat/sol-v16-day01-10-20261011
+    paths:
+      - .github/workflows/sol-v16-1-public-playtest.yml
+  workflow_dispatch:
+jobs:
+  public-playable-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify HTTPS alias exact deployed bytes and play controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='https://meownuri-sol-v16-story-preview.vercel.app/'
+          curl -fsSL --retry 4 --retry-all-errors --retry-delay 3 --max-time 70 "$TARGET" -o live.html
+          ACTUAL=$(sha256sum live.html | cut -d' ' -f1)
+          EXPECTED='b1fb2cf3e95795810e50ef96f3a39b283f831d7529333cc8830c7594b089de38'
+          echo "public_sha256=$ACTUAL"
+          echo "expected_sha256=$EXPECTED"
+          test "$ACTUAL" = "$EXPECTED"
+          grep -q 'solPlayabilityV161' live.html
+          grep -q 'DAY 4–10 바로 플레이' live.html
+          grep -q 'solStoryDay04to10' live.html
+          grep -q 'WIDE WORLD v16.1' live.html
+          echo 'PASS: public HTTPS game is the exact independently tested v16.1 file.'
