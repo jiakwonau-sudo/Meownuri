@@ -14,10 +14,10 @@ jobs:
         run: |
           set -euo pipefail
           BASE=https://meownuri-sol-v16-story-preview.vercel.app/
-          IMMUTABLE=https://meownuri-sol-v16-story-preview-gx37voi33.vercel.app/
+          IMMUTABLE=https://meownuri-sol-v16-story-preview-iyh3zncql.vercel.app/
           curl -fsSL --retry 3 --retry-delay 2 --max-time 45 "$BASE" -o stable.html
           curl -fsSL --retry 3 --retry-delay 2 --max-time 45 "$IMMUTABLE?scene=gift" -o gift.html
-          test "$(sha256sum stable.html | awk '{print $1}')" = "eae2fef437f4606f1744cbef93158727a76b82d258194d32a5b9f0542ceff57e"
+          test "$(sha256sum stable.html | awk '{print $1}')" = "ae115d1ad0dbfcee4a7ac7c390d07b0032451bb1455a887a3262b1af4648bc69"
           cmp stable.html gift.html
           python3 - <<'PYTEST'
           import re, json, base64
