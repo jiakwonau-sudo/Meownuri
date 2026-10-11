@@ -1,0 +1,25 @@
+name: SOL v16.5 public build integrity
+on:
+  push:
+    branches: [feat/sol-v16.5-tap-cinema-20261011]
+    paths: [.github/workflows/sol-v165-public-qa.yml]
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify deployed build is exactly tested source
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --retry-delay 2 --max-time 70 \
+            'https://meownuri-sol-v16-story-preview.vercel.app/?scene=gift&v=16.5' \
+            -o /tmp/sol-v165.html
+          expected='1e871b926f6d80ed0d0b9b1c19ca950b8597a602239da36c6545031379291fe2'
+          actual="$(sha256sum /tmp/sol-v165.html | awk '{print $1}')"
+          echo "public_sha256=$actual"
+          test "$expected" = "$actual"
+          grep -q 'solTapCinematicController' /tmp/sol-v165.html
+          grep -q 'v16.5' /tmp/sol-v165.html
+          echo 'PASS: public source byte-identical to touch-tested v16.5.'
