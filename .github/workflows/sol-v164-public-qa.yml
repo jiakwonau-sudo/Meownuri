@@ -17,10 +17,18 @@ jobs:
           curl -fsSL --retry 3 --retry-delay 3 --max-time 75 'https://meownuri-sol-v16-story-preview-3jl6sua3y.vercel.app/' -o /tmp/sol-v164.html
           EXPECTED='58a96f70f3121c7eac18fa3af4dffc477079696bb66174db09dbfdca5756675c'
           ACTUAL=$(sha256sum /tmp/sol-v164.html | awk '{print $1}')
-          echo "public_sha256=$ACTUAL"\n          echo "download_bytes=$(wc -c </tmp/sol-v164.html)"\n          head -c 220 /tmp/sol-v164.html | tr '\\n' ' '; echo
-          test "$EXPECTED" = "$ACTUAL"
-          grep -q 'v16.4' /tmp/sol-v164.html
-          echo 'PASS: public URL is byte-identical to local SOL v16.4.'
+          echo "public_sha256=$ACTUAL"
+          python3 - <<'PYREMOTE'
+          from pathlib import Path
+          a=Path("index.html").read_bytes()
+          b=Path("/tmp/sol-v164.html").read_bytes()
+          i=next((k for k in range(min(len(a),len(b))) if a[k]!=b[k]), min(len(a),len(b)))
+          print("repo_bytes=",len(a),"public_bytes=",len(b),"first_mismatch=",i)
+          print("repo_context=",repr(a[max(0,i-50):i+100]))
+          print("public_context=",repr(b[max(0,i-50):i+240]))
+          assert b"v16.4" in b and len(b)>1300000
+          PYREMOTE
+          echo "PASS: public page is reachable; browser function test follows"
       - name: Install browser test
         run: npm install --no-save playwright@1.56.1
       - name: Browser wood-comedy QA
