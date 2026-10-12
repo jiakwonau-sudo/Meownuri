@@ -3425,7 +3425,7 @@ import * as THREE from 'three';
  css.textContent=`
    #solStoryPanel.sol-guide-dismissed{
       opacity:0!important;visibility:hidden!important;pointer-events:none!important;
-      transition:opacity .18s ease,visibility .18s ease!important;
+      transition:none!important; /* Dismiss immediately, including computed visibility. */
    }
    #solStoryPanel.sol-guide-expanded{
       z-index:45!important;
