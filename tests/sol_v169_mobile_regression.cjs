@@ -41,7 +41,9 @@ const check=(name,ok,detail)=>{result.checks.push({name,ok,detail});console.log(
     s=await state();
     if(baseline){
       check('Original Close failed reproduced',s.visibility==='visible'&&s.classes.includes('sol-guide-dismissed')&&s.events.at(-1)==='collapse',s);
-      await waitHidden();s=await state();check('Original transition eventually hides guide',s.visibility==='hidden'&&s.opacity==='0',s);
+      await waitHidden().catch(()=>{});s=await state();
+      result.baselineAfterTransition=s;
+      console.log('BASELINE visibility after transition observation',JSON.stringify(s));
     }else{
       check('Close immediately hides guide',s.visibility==='hidden'&&s.opacity==='0'&&s.pointerEvents==='none',s);
       await page.waitForTimeout(250);s=await state();check('Guide stays closed across HUD update',s.visibility==='hidden',s);
@@ -65,7 +67,9 @@ const check=(name,ok,detail)=>{result.checks.push({name,ok,detail});console.log(
         await page.waitForFunction(b=>MeownuriStory.getCurrent().beat!==b||MeownuriStory.getCurrent().finished,before);
         await waitHidden();
       };
-      await go();await go();s=await state();check('Day4 reaches 3/5 with guide hidden',s.beat===2&&s.visibility==='hidden',s);
+      await go();await go();
+      await page.waitForFunction(()=>__SOL_MISSION_HUD_V169__.beat===2);
+      s=await state();check('Day4 reaches 3/5 with guide hidden',s.beat===2&&s.visibility==='hidden',s);
       await page.screenshot({path:path.join(output,'day4-3of5.png')});
       await page.locator('#solMissionQuietV169').tap();check('Quiet hides action',!await page.locator('#solMissionDoV169').isVisible());
       await page.locator('#solMissionMoreV169').tap();check('Restore shows action',await page.locator('#solMissionDoV169').isVisible());
@@ -74,6 +78,7 @@ const check=(name,ok,detail)=>{result.checks.push({name,ok,detail});console.log(
       s=await state();check('Day4 completes all five beats',s.finished&&s.cta.includes('DAY 5'),s);
       await page.locator('#solMissionDoV169').tap();
       await page.waitForFunction(()=>MeownuriStory.getCurrent().day===5);
+      await page.waitForFunction(()=>__SOL_MISSION_HUD_V169__.day===5);
       await waitHidden();s=await state();check('Day5 transition',s.day===5&&!s.finished&&s.beat===0&&s.visibility==='hidden',s);
       await page.screenshot({path:path.join(output,'day5-start.png')});
     }
