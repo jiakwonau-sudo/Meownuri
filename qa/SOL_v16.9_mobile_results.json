@@ -1,0 +1,388 @@
+{
+  "baseline": false,
+  "testedAt": "2026-10-12T10:21:17.724Z",
+  "sourceSha256": "d37f9cd3c69abddacb8237bbc6e4efbd3ffe56fb98126502236e7e42b4f616de",
+  "checks": [
+    {
+      "name": "Day4 compact by default",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "collapse",
+          "beat:4:0:false"
+        ]
+      }
+    },
+    {
+      "name": "Open guide",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "visible",
+        "opacity": "1",
+        "pointerEvents": "auto",
+        "classes": "sol-guide-expanded",
+        "transition": "all",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "collapse",
+          "beat:4:0:false",
+          "expand"
+        ]
+      }
+    },
+    {
+      "name": "Close immediately hides guide",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "collapse",
+          "beat:4:0:false",
+          "expand",
+          "collapse"
+        ]
+      }
+    },
+    {
+      "name": "Guide stays closed across HUD update",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "collapse",
+          "beat:4:0:false",
+          "expand",
+          "collapse"
+        ]
+      }
+    },
+    {
+      "name": "Reopen with touch",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "visible",
+        "opacity": "1",
+        "pointerEvents": "auto",
+        "classes": "sol-guide-expanded",
+        "transition": "all",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "collapse",
+          "beat:4:0:false",
+          "expand",
+          "collapse",
+          "expand"
+        ]
+      }
+    },
+    {
+      "name": "Close with touch",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "collapse",
+          "beat:4:0:false",
+          "expand",
+          "collapse",
+          "expand",
+          "collapse"
+        ]
+      }
+    },
+    {
+      "name": "Escape closes guide",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "expand",
+          "collapse",
+          "expand",
+          "collapse",
+          "expand",
+          "collapse"
+        ]
+      }
+    },
+    {
+      "name": "Walk enables action at beat 0",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 0,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "1/5 ✓ 행동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "expand",
+          "collapse",
+          "expand",
+          "collapse",
+          "collapse",
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "Walk enables action at beat 1",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 1,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "2/5 ✓ 행동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "action",
+          "collapse",
+          "action",
+          "beat:4:1:false",
+          "collapse",
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "Day4 reaches 3/5 with guide hidden",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 2,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "3/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "beat:4:1:false",
+          "collapse",
+          "action",
+          "collapse",
+          "action",
+          "beat:4:2:false"
+        ]
+      }
+    },
+    {
+      "name": "Quiet hides action",
+      "ok": true
+    },
+    {
+      "name": "Restore shows action",
+      "ok": true
+    },
+    {
+      "name": "Walk enables action at beat 2",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 2,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "3/5 ✓ 행동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "action",
+          "beat:4:2:false",
+          "collapse",
+          "quiet",
+          "collapse",
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "Walk enables action at beat 3",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 3,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "4/5 ✓ 행동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "action",
+          "collapse",
+          "action",
+          "beat:4:3:false",
+          "collapse",
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "Walk enables action at beat 4",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 4,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "5/5 ✓ 행동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "action",
+          "collapse",
+          "action",
+          "beat:4:4:false",
+          "collapse",
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "Day4 completes all five beats",
+      "ok": true,
+      "detail": {
+        "day": 4,
+        "beat": 5,
+        "finished": true,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "▶ DAY 5",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "beat:4:4:false",
+          "collapse",
+          "action",
+          "collapse",
+          "action",
+          "beat:4:5:true"
+        ]
+      }
+    },
+    {
+      "name": "Day5 transition",
+      "ok": true,
+      "detail": {
+        "day": 5,
+        "beat": 0,
+        "finished": false,
+        "visibility": "hidden",
+        "opacity": "0",
+        "pointerEvents": "none",
+        "classes": "sol-guide-dismissed",
+        "transition": "none",
+        "cta": "1/5 🐾 이동",
+        "dockHidden": false,
+        "renderer": "3d",
+        "events": [
+          "action",
+          "collapse",
+          "action",
+          "beat:4:5:true",
+          "collapse",
+          "beat:5:0:false"
+        ]
+      }
+    },
+    {
+      "name": "No JavaScript page errors",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "pageErrors": [],
+  "url": "http://127.0.0.1:44113/",
+  "browser": "154.0.8037.97",
+  "renderer": "3d",
+  "status": "PASS"
+}
