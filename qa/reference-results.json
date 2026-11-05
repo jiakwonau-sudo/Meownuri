@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "name": "3D module boot",
+      "ok": true
+    },
+    {
+      "name": "Pet causes cat heart",
+      "ok": true
+    },
+    {
+      "name": "Care tap cooldown",
+      "ok": true
+    },
+    {
+      "name": "Feed consumes exactly one and saves",
+      "ok": true
+    },
+    {
+      "name": "No fish disables feed",
+      "ok": true
+    },
+    {
+      "name": "Care hidden without nearby cat",
+      "ok": true
+    },
+    {
+      "name": "Water target rejected",
+      "ok": true
+    },
+    {
+      "name": "Walk target accepted",
+      "ok": true
+    },
+    {
+      "name": "Walk reaches target",
+      "ok": true
+    },
+    {
+      "name": "Manual input cancels walk",
+      "ok": true
+    },
+    {
+      "name": "Ground touch starts walking",
+      "ok": true
+    },
+    {
+      "name": "Camera drag does not walk",
+      "ok": true
+    },
+    {
+      "name": "Story lock blocks walk and care",
+      "ok": true
+    },
+    {
+      "name": "Three house options visible",
+      "ok": true
+    },
+    {
+      "name": "Selected card state",
+      "ok": true
+    },
+    {
+      "name": "Blueprint retains style",
+      "ok": true
+    },
+    {
+      "name": "Real construction preserves costs and style",
+      "ok": true
+    },
+    {
+      "name": "Reload restores house appearance",
+      "ok": true
+    },
+    {
+      "name": "No page errors",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "scope": "Chromium mobile 390x844; software WebGL; fixture-based interaction tests, not full story playthrough",
+  "status": "PASS"
+}
