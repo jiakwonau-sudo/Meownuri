@@ -10,7 +10,7 @@ if(g&&window.MeownuriCozy){
  body.cozy-review-play #statusPanel,body.cozy-review-play #questPanel,#solChapter{display:none!important}
  body.cozy-review-play #hint{bottom:235px;max-width:90vw}
  `;document.head.append(css);
- const panel=$('#start .panel');panel.innerHTML='<div class="ag-title-kicker">SOL v16.10 · PREVIEW</div><h1>냥누리</h1><h2>작은 마을의 일상</h2><p>고양이를 돌보고<br>세 가지 빛깔의 집을 지어보세요.</p><p class="note">새 기능 체험용 공간입니다.<br>진행 내용은 저장하지 않습니다.</p><button class="primary" id="cozyReviewStart">🐾 마을 둘러보기</button>';
+ const panel=$('#start .panel');panel.innerHTML='<div class="ag-title-kicker">SOL v16.11 · PREVIEW</div><h1>냥누리</h1><h2>작은 마을의 일상</h2><p>고양이를 돌보고<br>장소·색상·재질을 골라 공간을 꾸며보세요.</p><p class="note">새 기능 체험용 공간입니다.<br>진행 내용은 저장하지 않습니다.</p><button class="primary" id="cozyReviewStart">🐾 마을 둘러보기</button>';
  const dock=document.createElement('div');dock.id='cozyReviewDock';dock.hidden=true;dock.setAttribute('aria-label','새 기능 체험');dock.innerHTML='<button id="cozyReviewCare">♡ 고양이</button><button id="cozyReviewBuild">⌂ 집 짓기</button><button id="cozyReviewReset">↺ 다시</button>';document.body.append(dock);
  function carePlace(){
   MeownuriCozy.cancel();g.closeModal();
