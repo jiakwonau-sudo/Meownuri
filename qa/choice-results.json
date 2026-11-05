@@ -1,0 +1,126 @@
+{
+  "testedAt": "2026-11-05T09:33:13.806Z",
+  "checks": [
+    {
+      "name": "3d renderer",
+      "pass": true
+    },
+    {
+      "name": "3d visual draft not saved early",
+      "pass": true
+    },
+    {
+      "name": "3d Tab enters studio controls",
+      "pass": true
+    },
+    {
+      "name": "3d confirm creates persistent result",
+      "pass": true
+    },
+    {
+      "name": "3d coast has fish interaction",
+      "pass": true
+    },
+    {
+      "name": "3d reload restores result",
+      "pass": true
+    },
+    {
+      "name": "3d second combination commits",
+      "pass": true
+    },
+    {
+      "name": "3d playground has play interaction",
+      "pass": true
+    },
+    {
+      "name": "3d undo restores prior choice",
+      "pass": true
+    },
+    {
+      "name": "3d cancel discards draft",
+      "pass": true
+    },
+    {
+      "name": "3d narrow screen controls stay visible",
+      "pass": true
+    },
+    {
+      "name": "3d no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "3d meadow grows flowers",
+      "pass": true
+    },
+    {
+      "name": "2d renderer",
+      "pass": true
+    },
+    {
+      "name": "2d visual draft not saved early",
+      "pass": true
+    },
+    {
+      "name": "2d Tab enters studio controls",
+      "pass": true
+    },
+    {
+      "name": "2d confirm creates persistent result",
+      "pass": true
+    },
+    {
+      "name": "2d coast has fish interaction",
+      "pass": true
+    },
+    {
+      "name": "2d reload restores result",
+      "pass": true
+    },
+    {
+      "name": "2d second combination commits",
+      "pass": true
+    },
+    {
+      "name": "2d playground has play interaction",
+      "pass": true
+    },
+    {
+      "name": "2d undo restores prior choice",
+      "pass": true
+    },
+    {
+      "name": "2d cancel discards draft",
+      "pass": true
+    },
+    {
+      "name": "2d narrow screen controls stay visible",
+      "pass": true
+    },
+    {
+      "name": "2d no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "2d meadow grows flowers",
+      "pass": true
+    },
+    {
+      "name": "All 27 combinations produce distinct 2D images",
+      "pass": true,
+      "detail": 27
+    },
+    {
+      "name": "All combination loop leaves valid saved result",
+      "pass": true
+    },
+    {
+      "name": "No JavaScript errors",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "scope": "local Chromium; mobile emulation; GPU software / forced 2D; no physical device or audio listening",
+  "status": "PASS"
+}
